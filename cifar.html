@@ -113,7 +113,7 @@
 </pre></div>
 
 
-<p>File <a href="/problem_unittests.py">problem_unittests</a></p>
+<p>Download File <a href="/problem_unittests.py">problem_unittests</a></p>
 <h2>Explore the Data</h2>
 <p>The dataset is broken into batches to prevent your machine from running out of memory.  The CIFAR-10 dataset consists of 5 batches, named <code>data_batch_1</code>, <code>data_batch_2</code>, etc.. Each batch contains the labels and images that are one of the following:
 * airplane
@@ -151,7 +151,7 @@
 </pre></div>
 
 
-<p>File <a href="/helper.py">helper</a></p>
+<p>Download File <a href="/helper.py">helper</a></p>
 <p><img alt="png" src="/images/cifar2_3_1.png"></p>
 <h2>Implement Preprocess Functions</h2>
 <h3>Normalize</h3>
@@ -221,16 +221,16 @@
 <h3>Input</h3>
 <p>The neural network needs to read the image data, one-hot encoded labels, and dropout keep probability. Implement the following functions
 * Implement <code>neural_net_image_input</code>
- * Return a <a href="https://www.tensorflow.org/api_docs/python/tf/placeholder">TF Placeholder</a>
+ * Return a <a href="https://www.tensorflow.org/api_docs/python/tf/compat/v1/placeholder">TF Placeholder</a>
  * Set the shape using <code>image_shape</code> with batch size set to <code>None</code>.
- * Name the TensorFlow placeholder "x" using the TensorFlow <code>name</code> parameter in the <a href="https://www.tensorflow.org/api_docs/python/tf/placeholder">TF Placeholder</a>.
+ * Name the TensorFlow placeholder "x" using the TensorFlow <code>name</code> parameter in the <a href="https://www.tensorflow.org/api_docs/python/tf/compat/v1/placeholder">TF Placeholder</a>.
 * Implement <code>neural_net_label_input</code>
- * Return a <a href="https://www.tensorflow.org/api_docs/python/tf/placeholder">TF Placeholder</a>
+ * Return a <a href="https://www.tensorflow.org/api_docs/python/tf/compat/v1/placeholder">TF Placeholder</a>
  * Set the shape using <code>n_classes</code> with batch size set to <code>None</code>.
- * Name the TensorFlow placeholder "y" using the TensorFlow <code>name</code> parameter in the <a href="https://www.tensorflow.org/api_docs/python/tf/placeholder">TF Placeholder</a>.
+ * Name the TensorFlow placeholder "y" using the TensorFlow <code>name</code> parameter in the <a href="https://www.tensorflow.org/api_docs/python/tf/compat/v1/placeholder">TF Placeholder</a>.
 * Implement <code>neural_net_keep_prob_input</code>
- * Return a <a href="https://www.tensorflow.org/api_docs/python/tf/placeholder">TF Placeholder</a> for dropout keep probability.
- * Name the TensorFlow placeholder "keep_prob" using the TensorFlow <code>name</code> parameter in the <a href="https://www.tensorflow.org/api_docs/python/tf/placeholder">TF Placeholder</a>.</p>
+ * Return a <a href="https://www.tensorflow.org/api_docs/python/tf/compat/v1/placeholder">TF Placeholder</a> for dropout keep probability.
+ * Name the TensorFlow placeholder "keep_prob" using the TensorFlow <code>name</code> parameter in the <a href="https://www.tensorflow.org/api_docs/python/tf/compat/v1/placeholder">TF Placeholder</a>.</p>
 <p>These names will be used at the end of the project to load the saved model.</p>
 <p>Note: <code>None</code> for shapes in TensorFlow allow for a dynamic size.</p>
 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
@@ -1322,7 +1322,7 @@
 </section>
 <section>
   <h1>Tags</h1>
-    <a href="/tag/python.html">Python</a>,    <a href="/tag/data-science.html">Data Science</a>,    <a href="/tag/r.html">R</a>,    <a href="/tag/tableau.html">Tableau</a></section>
+    <a href="/tag/r.html">R</a>,    <a href="/tag/python.html">Python</a>,    <a href="/tag/tableau.html">Tableau</a>,    <a href="/tag/data-science.html">Data Science</a></section>
 
 </aside>
     </div>
