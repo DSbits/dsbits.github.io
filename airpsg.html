@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Airline Passengers Data Analysis &mdash; SciArts.org</title>
+  <meta name="author" content="Mangs">
+
+  <link rel="canonical" href="/airpsg.html"/>
+  
+  <meta property="og:site_name" content="SciArts.org" />
+  <meta property="og:type" content="article" />
+    
+  <meta property="og:title" content="Airline Passengers Data Analysis" />
+  <meta property="og:url" content="/airpsg.html" />
+  <meta property="og:description" content="For sometime I've been thinking about holidays and how travelling during these days might be different than rest of the year. Since most of the people travel during holidays, there is a very good possibility of having some seasonal bias in the data. Let's start with analysis of the information given in the Airline Passengers data set. The data consists of monthly totals of airline passengers from January 1949 to December 1960. Sample size: n = 144, Number: the monthly passenger totals in thousands." />
+  <meta property="article:published_time" content="2018-12-16 07:20:00-08:00" />
+  <meta property="article:modified_time" content="2018-12-16 07:20:00-08:00" />
+
+
+
+
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="/favicon.png" rel="icon">
+
+  <link href="/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+
+  <link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic"
+        rel="stylesheet" type="text/css">
+  <link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic"
+        rel="stylesheet" type="text/css">
+
+  <script src="/theme/js/modernizr-2.0.js"></script>
+  <script src="/theme/js/ender.js"></script>
+  <script src="/theme/js/octopress.js" type="text/javascript"></script>
+</head>
+
+<body >
+  <header role="banner"
+  >
+<hgroup>
+  <h1><a href="/">SciArts.org</a></h1>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+</ul>
+
+
+<ul class="main-navigation">
+    <li><a href="/archives.html">Archives</a></li>
+    <li><a href="/pages/about.html">About</a></li>
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">Airline Passengers Data Analysis</h1>
+    <p class="meta">
+<time datetime="2018-12-16T07:20:00-08:00" pubdate>Sun 16 December 2018</time>      
+    </p>
+</header>
+
+    <div class="entry-content"><p>For sometime I've been thinking about holidays and how travelling during these days might be different than rest of the year. Since most of the people travel during holidays, there is a very good possibility of having some seasonal bias in the data. Let's start with analysis of the information given in the Airline Passengers data set. The data consists of monthly totals of airline passengers from January 1949 to December 1960. Sample size: n = 144, Number:  the monthly passenger totals in thousands. </p>
+<p>We'll use the following forecasting methods for the time series data:<br/>
+(1) Moving Average <br/>
+(2) Single/Simple Exponential Smoothing Method<br/>
+(3) Double Exponential Smoothing<br/>
+(4) Triple Exponential Smoothing<br/>
+(5) Auto Regressive Integrated Moving Average Method<br/>
+(6) Neural Network Based Forecasting</p>
+<p>We begin with importing the libraries.</p>
+<div class="highlight"><pre><span></span><span class="c1">#use/import the required libraries</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">forecast</span><span class="p">)</span>
+</pre></div>
+
+
+<p>Here we are going to create a time series data from 1100 to 1200 for illustration purposes.</p>
+<div class="highlight"><pre><span></span><span class="c1">#numbers from 1100 to 1200</span>
+<span class="n">tsData</span> <span class="o">&lt;-</span> <span class="m">1100</span><span class="o">:</span><span class="m">1200</span>
+<span class="n">tsData</span>
+</pre></div>
+
+
+<p>1100 1101 1102 1103 1104 1105 1106 1107 1108 1109 1110 1111 1112 1113 1114 1115 1116 1117 1118 1119 1120 1121 1122 1123 1124 1125 1126 1127 1128 1129 1130 1131 1132 1133 1134 1135 1136 1137 1138 1139 1140 1141 1142 1143 1144 1145 1146 1147 1148 1149 1150 1151 1152 1153 1154 1155 1156 1157 1158 1159 1160 1161 1162 1163 1164 1165 1166 1167 1168 1169 1170 1171 1172 1173 1174 1175 1176 1177 1178 1179 1180 1181 1182 1183 1184 1185 1186 1187 1188 1189 1190 1191 1192 1193 1194 1195 1196 1197 1198 1199 1200 </p>
+<p>Converting the time series to quaterly data.</p>
+<div class="highlight"><pre><span></span><span class="c1">#converting the numbers to time series. Frquency of 4 indicating quarterly </span>
+<span class="nf">ts</span><span class="p">(</span><span class="n">tsData</span><span class="p">,</span> <span class="n">frequency</span> <span class="o">=</span> <span class="m">4</span><span class="p">,</span><span class="n">start</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="m">2010</span><span class="p">,</span><span class="m">1</span><span class="p">))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="err">     Qtr1 Qtr2 Qtr3 Qtr4</span>
+<span class="err">2010 1100 1101 1102 1103</span>
+<span class="err">2011 1104 1105 1106 1107</span>
+<span class="err">2012 1108 1109 1110 1111</span>
+<span class="err">2013 1112 1113 1114 1115</span>
+<span class="err">2014 1116 1117 1118 1119</span>
+<span class="err">2015 1120 1121 1122 1123</span>
+<span class="err">2016 1124 1125 1126 1127</span>
+<span class="err">2017 1128 1129 1130 1131</span>
+<span class="err">2018 1132 1133 1134 1135</span>
+<span class="err">2019 1136 1137 1138 1139</span>
+<span class="err">2020 1140 1141 1142 1143</span>
+<span class="err">2021 1144 1145 1146 1147</span>
+<span class="err">2022 1148 1149 1150 1151</span>
+<span class="err">2023 1152 1153 1154 1155</span>
+<span class="err">2024 1156 1157 1158 1159</span>
+<span class="err">2025 1160 1161 1162 1163</span>
+<span class="err">2026 1164 1165 1166 1167</span>
+<span class="err">2027 1168 1169 1170 1171</span>
+<span class="err">2028 1172 1173 1174 1175</span>
+<span class="err">2029 1176 1177 1178 1179</span>
+<span class="err">2030 1180 1181 1182 1183</span>
+<span class="err">2031 1184 1185 1186 1187</span>
+<span class="err">2032 1188 1189 1190 1191</span>
+<span class="err">2033 1192 1193 1194 1195</span>
+<span class="err">2034 1196 1197 1198 1199</span>
+<span class="err">2035 1200</span>
+</pre></div>
+
+
+<p>Converting time series to monthly data.</p>
+<div class="highlight"><pre><span></span><span class="c1">#converting the numbers to time series. Frequency of 12 indicating monthly</span>
+<span class="nf">ts</span><span class="p">(</span><span class="n">tsData</span><span class="p">,</span> <span class="n">frequency</span> <span class="o">=</span> <span class="m">12</span><span class="p">,</span><span class="n">start</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="m">2010</span><span class="p">,</span><span class="m">1</span><span class="p">))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="err">      Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec</span>
+<span class="err">2010 1100 1101 1102 1103 1104 1105 1106 1107 1108 1109 1110 1111</span>
+<span class="err">2011 1112 1113 1114 1115 1116 1117 1118 1119 1120 1121 1122 1123</span>
+<span class="err">2012 1124 1125 1126 1127 1128 1129 1130 1131 1132 1133 1134 1135</span>
+<span class="err">2013 1136 1137 1138 1139 1140 1141 1142 1143 1144 1145 1146 1147</span>
+<span class="err">2014 1148 1149 1150 1151 1152 1153 1154 1155 1156 1157 1158 1159</span>
+<span class="err">2015 1160 1161 1162 1163 1164 1165 1166 1167 1168 1169 1170 1171</span>
+<span class="err">2016 1172 1173 1174 1175 1176 1177 1178 1179 1180 1181 1182 1183</span>
+<span class="err">2017 1184 1185 1186 1187 1188 1189 1190 1191 1192 1193 1194 1195</span>
+<span class="err">2018 1196 1197 1198 1199 1200</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="c1">#converting the numbers to time series with frequency 1.</span>
+<span class="nf">ts</span><span class="p">(</span><span class="n">tsData</span><span class="p">,</span> <span class="n">frequency</span> <span class="o">=</span> <span class="m">1</span><span class="p">,</span><span class="n">start</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="m">2010</span><span class="p">,</span><span class="m">1</span><span class="p">))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="err">Time Series:</span>
+<span class="err">Start = 2010 </span>
+<span class="err">End = 2110 </span>
+<span class="err">Frequency = 1 </span>
+<span class="err">  [1] 1100 1101 1102 1103 1104 1105 1106 1107 1108 1109 1110 1111 1112 1113 1114</span>
+<span class="err"> [16] 1115 1116 1117 1118 1119 1120 1121 1122 1123 1124 1125 1126 1127 1128 1129</span>
+<span class="err"> [31] 1130 1131 1132 1133 1134 1135 1136 1137 1138 1139 1140 1141 1142 1143 1144</span>
+<span class="err"> [46] 1145 1146 1147 1148 1149 1150 1151 1152 1153 1154 1155 1156 1157 1158 1159</span>
+<span class="err"> [61] 1160 1161 1162 1163 1164 1165 1166 1167 1168 1169 1170 1171 1172 1173 1174</span>
+<span class="err"> [76] 1175 1176 1177 1178 1179 1180 1181 1182 1183 1184 1185 1186 1187 1188 1189</span>
+<span class="err"> [91] 1190 1191 1192 1193 1194 1195 1196 1197 1198 1199 1200</span>
+</pre></div>
+
+
+<p>Starting with the Air Passengers data for analysis.</p>
+<div class="highlight"><pre><span></span><span class="c1">#AirPassengers data</span>
+<span class="n">ts_ap</span> <span class="o">&lt;-</span> <span class="n">AirPassengers</span>
+<span class="n">ts_ap</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="err">     Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec</span>
+<span class="err">1949 112 118 132 129 121 135 148 148 136 119 104 118</span>
+<span class="err">1950 115 126 141 135 125 149 170 170 158 133 114 140</span>
+<span class="err">1951 145 150 178 163 172 178 199 199 184 162 146 166</span>
+<span class="err">1952 171 180 193 181 183 218 230 242 209 191 172 194</span>
+<span class="err">1953 196 196 236 235 229 243 264 272 237 211 180 201</span>
+<span class="err">1954 204 188 235 227 234 264 302 293 259 229 203 229</span>
+<span class="err">1955 242 233 267 269 270 315 364 347 312 274 237 278</span>
+<span class="err">1956 284 277 317 313 318 374 413 405 355 306 271 306</span>
+<span class="err">1957 315 301 356 348 355 422 465 467 404 347 305 336</span>
+<span class="err">1958 340 318 362 348 363 435 491 505 404 359 310 337</span>
+<span class="err">1959 360 342 406 396 420 472 548 559 463 407 362 405</span>
+<span class="err">1960 417 391 419 461 472 535 622 606 508 461 390 432</span>
+</pre></div>
+
+
+<p>Visualization of the Air Passengers data on a graph.</p>
+<div class="highlight"><pre><span></span><span class="nf">par</span><span class="p">(</span><span class="n">mfrow</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">2</span><span class="p">,</span><span class="m">1</span><span class="p">))</span>
+<span class="nf">plot</span><span class="p">(</span><span class="n">ts_ap</span><span class="p">,</span><span class="n">col</span><span class="o">=</span><span class="s">&#39;blue&#39;</span><span class="p">,</span><span class="n">main</span><span class="o">=</span><span class="s">&#39;Air Passengers graph&#39;</span><span class="p">,</span><span class="n">ylab</span><span class="o">=</span><span class="s">&#39;Air Passengers&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<p><img alt="png" src="/images/airpsg_6_0.png"></p>
+<p>Components of a time series are seasonality, trend, cyclicity and irregularity. We can structure the data in two ways - additive model and multiplicative model. </p>
+<p>Yt = St + Tt + et ----additive model</p>
+<p>Yt = St * Tt * et ----multiplicative model</p>
+<p>One can convert a multiplicative time series into an additive time series by using logarithimic transformation</p>
+<div class="highlight"><pre><span></span><span class="c1"># Assumptions of a time series forecasting model</span>
+
+<span class="c1">#1- Time is continuous</span>
+<span class="c1">#2- Data has Stationarity:</span>
+    <span class="c1">#1- mean value is constant over time, there is no trend component</span>
+    <span class="c1">#2- variance does not increase over time </span>
+    <span class="c1">#3- there is no seasonality</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="nf">print</span><span class="p">(</span><span class="nf">decompose</span><span class="p">(</span><span class="n">ts_ap</span><span class="p">,</span><span class="n">type</span> <span class="o">=</span> <span class="s">&#39;additive&#39;</span><span class="p">))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="err">$</span><span class="n">x</span>
+     <span class="n">Jan</span> <span class="n">Feb</span> <span class="n">Mar</span> <span class="n">Apr</span> <span class="n">May</span> <span class="n">Jun</span> <span class="n">Jul</span> <span class="n">Aug</span> <span class="n">Sep</span> <span class="n">Oct</span> <span class="n">Nov</span> <span class="nb">Dec</span>
+<span class="mi">1949</span> <span class="mi">112</span> <span class="mi">118</span> <span class="mi">132</span> <span class="mi">129</span> <span class="mi">121</span> <span class="mi">135</span> <span class="mi">148</span> <span class="mi">148</span> <span class="mi">136</span> <span class="mi">119</span> <span class="mi">104</span> <span class="mi">118</span>
+<span class="mi">1950</span> <span class="mi">115</span> <span class="mi">126</span> <span class="mi">141</span> <span class="mi">135</span> <span class="mi">125</span> <span class="mi">149</span> <span class="mi">170</span> <span class="mi">170</span> <span class="mi">158</span> <span class="mi">133</span> <span class="mi">114</span> <span class="mi">140</span>
+<span class="mi">1951</span> <span class="mi">145</span> <span class="mi">150</span> <span class="mi">178</span> <span class="mi">163</span> <span class="mi">172</span> <span class="mi">178</span> <span class="mi">199</span> <span class="mi">199</span> <span class="mi">184</span> <span class="mi">162</span> <span class="mi">146</span> <span class="mi">166</span>
+<span class="mi">1952</span> <span class="mi">171</span> <span class="mi">180</span> <span class="mi">193</span> <span class="mi">181</span> <span class="mi">183</span> <span class="mi">218</span> <span class="mi">230</span> <span class="mi">242</span> <span class="mi">209</span> <span class="mi">191</span> <span class="mi">172</span> <span class="mi">194</span>
+<span class="mi">1953</span> <span class="mi">196</span> <span class="mi">196</span> <span class="mi">236</span> <span class="mi">235</span> <span class="mi">229</span> <span class="mi">243</span> <span class="mi">264</span> <span class="mi">272</span> <span class="mi">237</span> <span class="mi">211</span> <span class="mi">180</span> <span class="mi">201</span>
+<span class="mi">1954</span> <span class="mi">204</span> <span class="mi">188</span> <span class="mi">235</span> <span class="mi">227</span> <span class="mi">234</span> <span class="mi">264</span> <span class="mi">302</span> <span class="mi">293</span> <span class="mi">259</span> <span class="mi">229</span> <span class="mi">203</span> <span class="mi">229</span>
+<span class="mi">1955</span> <span class="mi">242</span> <span class="mi">233</span> <span class="mi">267</span> <span class="mi">269</span> <span class="mi">270</span> <span class="mi">315</span> <span class="mi">364</span> <span class="mi">347</span> <span class="mi">312</span> <span class="mi">274</span> <span class="mi">237</span> <span class="mi">278</span>
+<span class="mi">1956</span> <span class="mi">284</span> <span class="mi">277</span> <span class="mi">317</span> <span class="mi">313</span> <span class="mi">318</span> <span class="mi">374</span> <span class="mi">413</span> <span class="mi">405</span> <span class="mi">355</span> <span class="mi">306</span> <span class="mi">271</span> <span class="mi">306</span>
+<span class="mi">1957</span> <span class="mi">315</span> <span class="mi">301</span> <span class="mi">356</span> <span class="mi">348</span> <span class="mi">355</span> <span class="mi">422</span> <span class="mi">465</span> <span class="mi">467</span> <span class="mi">404</span> <span class="mi">347</span> <span class="mi">305</span> <span class="mi">336</span>
+<span class="mi">1958</span> <span class="mi">340</span> <span class="mi">318</span> <span class="mi">362</span> <span class="mi">348</span> <span class="mi">363</span> <span class="mi">435</span> <span class="mi">491</span> <span class="mi">505</span> <span class="mi">404</span> <span class="mi">359</span> <span class="mi">310</span> <span class="mi">337</span>
+<span class="mi">1959</span> <span class="mi">360</span> <span class="mi">342</span> <span class="mi">406</span> <span class="mi">396</span> <span class="mi">420</span> <span class="mi">472</span> <span class="mi">548</span> <span class="mi">559</span> <span class="mi">463</span> <span class="mi">407</span> <span class="mi">362</span> <span class="mi">405</span>
+<span class="mi">1960</span> <span class="mi">417</span> <span class="mi">391</span> <span class="mi">419</span> <span class="mi">461</span> <span class="mi">472</span> <span class="mi">535</span> <span class="mi">622</span> <span class="mi">606</span> <span class="mi">508</span> <span class="mi">461</span> <span class="mi">390</span> <span class="mi">432</span>
+
+<span class="err">$</span><span class="n">seasonal</span>
+            <span class="n">Jan</span>        <span class="n">Feb</span>        <span class="n">Mar</span>        <span class="n">Apr</span>        <span class="n">May</span>        <span class="n">Jun</span>
+<span class="mi">1949</span> <span class="o">-</span><span class="mi">24</span><span class="p">.</span><span class="mi">748737</span> <span class="o">-</span><span class="mi">36</span><span class="p">.</span><span class="mi">188131</span>  <span class="o">-</span><span class="mi">2</span><span class="p">.</span><span class="mi">241162</span>  <span class="o">-</span><span class="mi">8</span><span class="p">.</span><span class="mi">036616</span>  <span class="o">-</span><span class="mi">4</span><span class="p">.</span><span class="mi">506313</span>  <span class="mi">35</span><span class="p">.</span><span class="mi">402778</span>
+<span class="mi">1950</span> <span class="o">-</span><span class="mi">24</span><span class="p">.</span><span class="mi">748737</span> <span class="o">-</span><span class="mi">36</span><span class="p">.</span><span class="mi">188131</span>  <span class="o">-</span><span class="mi">2</span><span class="p">.</span><span class="mi">241162</span>  <span class="o">-</span><span class="mi">8</span><span class="p">.</span><span class="mi">036616</span>  <span class="o">-</span><span class="mi">4</span><span class="p">.</span><span class="mi">506313</span>  <span class="mi">35</span><span class="p">.</span><span class="mi">402778</span>
+<span class="mi">1951</span> <span class="o">-</span><span class="mi">24</span><span class="p">.</span><span class="mi">748737</span> <span class="o">-</span><span class="mi">36</span><span class="p">.</span><span class="mi">188131</span>  <span class="o">-</span><span class="mi">2</span><span class="p">.</span><span class="mi">241162</span>  <span class="o">-</span><span class="mi">8</span><span class="p">.</span><span class="mi">036616</span>  <span class="o">-</span><span class="mi">4</span><span class="p">.</span><span class="mi">506313</span>  <span class="mi">35</span><span class="p">.</span><span class="mi">402778</span>
+<span class="mi">1952</span> <span class="o">-</span><span class="mi">24</span><span class="p">.</span><span class="mi">748737</span> <span class="o">-</span><span class="mi">36</span><span class="p">.</span><span class="mi">188131</span>  <span class="o">-</span><span class="mi">2</span><span class="p">.</span><span class="mi">241162</span>  <span class="o">-</span><span class="mi">8</span><span class="p">.</span><span class="mi">036616</span>  <span class="o">-</span><span class="mi">4</span><span class="p">.</span><span class="mi">506313</span>  <span class="mi">35</span><span class="p">.</span><span class="mi">402778</span>
+<span class="mi">1953</span> <span class="o">-</span><span class="mi">24</span><span class="p">.</span><span class="mi">748737</span> <span class="o">-</span><span class="mi">36</span><span class="p">.</span><span class="mi">188131</span>  <span class="o">-</span><span class="mi">2</span><span class="p">.</span><span class="mi">241162</span>  <span class="o">-</span><span class="mi">8</span><span class="p">.</span><span class="mi">036616</span>  <span class="o">-</span><span class="mi">4</span><span class="p">.</span><span class="mi">506313</span>  <span class="mi">35</span><span class="p">.</span><span class="mi">402778</span>
+<span class="mi">1954</span> <span class="o">-</span><span class="mi">24</span><span class="p">.</span><span class="mi">748737</span> <span class="o">-</span><span class="mi">36</span><span class="p">.</span><span class="mi">188131</span>  <span class="o">-</span><span class="mi">2</span><span class="p">.</span><span class="mi">241162</span>  <span class="o">-</span><span class="mi">8</span><span class="p">.</span><span class="mi">036616</span>  <span class="o">-</span><span class="mi">4</span><span class="p">.</span><span class="mi">506313</span>  <span class="mi">35</span><span class="p">.</span><span class="mi">402778</span>
+<span class="mi">1955</span> <span class="o">-</span><span class="mi">24</span><span class="p">.</span><span class="mi">748737</span> <span class="o">-</span><span class="mi">36</span><span class="p">.</span><span class="mi">188131</span>  <span class="o">-</span><span class="mi">2</span><span class="p">.</span><span class="mi">241162</span>  <span class="o">-</span><span class="mi">8</span><span class="p">.</span><span class="mi">036616</span>  <span class="o">-</span><span class="mi">4</span><span class="p">.</span><span class="mi">506313</span>  <span class="mi">35</span><span class="p">.</span><span class="mi">402778</span>
+<span class="mi">1956</span> <span class="o">-</span><span class="mi">24</span><span class="p">.</span><span class="mi">748737</span> <span class="o">-</span><span class="mi">36</span><span class="p">.</span><span class="mi">188131</span>  <span class="o">-</span><span class="mi">2</span><span class="p">.</span><span class="mi">241162</span>  <span class="o">-</span><span class="mi">8</span><span class="p">.</span><span class="mi">036616</span>  <span class="o">-</span><span class="mi">4</span><span class="p">.</span><span class="mi">506313</span>  <span class="mi">35</span><span class="p">.</span><span class="mi">402778</span>
+<span class="mi">1957</span> <span class="o">-</span><span class="mi">24</span><span class="p">.</span><span class="mi">748737</span> <span class="o">-</span><span class="mi">36</span><span class="p">.</span><span class="mi">188131</span>  <span class="o">-</span><span class="mi">2</span><span class="p">.</span><span class="mi">241162</span>  <span class="o">-</span><span class="mi">8</span><span class="p">.</span><span class="mi">036616</span>  <span class="o">-</span><span class="mi">4</span><span class="p">.</span><span class="mi">506313</span>  <span class="mi">35</span><span class="p">.</span><span class="mi">402778</span>
+<span class="mi">1958</span> <span class="o">-</span><span class="mi">24</span><span class="p">.</span><span class="mi">748737</span> <span class="o">-</span><span class="mi">36</span><span class="p">.</span><span class="mi">188131</span>  <span class="o">-</span><span class="mi">2</span><span class="p">.</span><span class="mi">241162</span>  <span class="o">-</span><span class="mi">8</span><span class="p">.</span><span class="mi">036616</span>  <span class="o">-</span><span class="mi">4</span><span class="p">.</span><span class="mi">506313</span>  <span class="mi">35</span><span class="p">.</span><span class="mi">402778</span>
+<span class="mi">1959</span> <span class="o">-</span><span class="mi">24</span><span class="p">.</span><span class="mi">748737</span> <span class="o">-</span><span class="mi">36</span><span class="p">.</span><span class="mi">188131</span>  <span class="o">-</span><span class="mi">2</span><span class="p">.</span><span class="mi">241162</span>  <span class="o">-</span><span class="mi">8</span><span class="p">.</span><span class="mi">036616</span>  <span class="o">-</span><span class="mi">4</span><span class="p">.</span><span class="mi">506313</span>  <span class="mi">35</span><span class="p">.</span><span class="mi">402778</span>
+<span class="mi">1960</span> <span class="o">-</span><span class="mi">24</span><span class="p">.</span><span class="mi">748737</span> <span class="o">-</span><span class="mi">36</span><span class="p">.</span><span class="mi">188131</span>  <span class="o">-</span><span class="mi">2</span><span class="p">.</span><span class="mi">241162</span>  <span class="o">-</span><span class="mi">8</span><span class="p">.</span><span class="mi">036616</span>  <span class="o">-</span><span class="mi">4</span><span class="p">.</span><span class="mi">506313</span>  <span class="mi">35</span><span class="p">.</span><span class="mi">402778</span>
+            <span class="n">Jul</span>        <span class="n">Aug</span>        <span class="n">Sep</span>        <span class="n">Oct</span>        <span class="n">Nov</span>        <span class="nb">Dec</span>
+<span class="mi">1949</span>  <span class="mi">63</span><span class="p">.</span><span class="mi">830808</span>  <span class="mi">62</span><span class="p">.</span><span class="mi">823232</span>  <span class="mi">16</span><span class="p">.</span><span class="mi">520202</span> <span class="o">-</span><span class="mi">20</span><span class="p">.</span><span class="mi">642677</span> <span class="o">-</span><span class="mi">53</span><span class="p">.</span><span class="mi">593434</span> <span class="o">-</span><span class="mi">28</span><span class="p">.</span><span class="mi">619949</span>
+<span class="mi">1950</span>  <span class="mi">63</span><span class="p">.</span><span class="mi">830808</span>  <span class="mi">62</span><span class="p">.</span><span class="mi">823232</span>  <span class="mi">16</span><span class="p">.</span><span class="mi">520202</span> <span class="o">-</span><span class="mi">20</span><span class="p">.</span><span class="mi">642677</span> <span class="o">-</span><span class="mi">53</span><span class="p">.</span><span class="mi">593434</span> <span class="o">-</span><span class="mi">28</span><span class="p">.</span><span class="mi">619949</span>
+<span class="mi">1951</span>  <span class="mi">63</span><span class="p">.</span><span class="mi">830808</span>  <span class="mi">62</span><span class="p">.</span><span class="mi">823232</span>  <span class="mi">16</span><span class="p">.</span><span class="mi">520202</span> <span class="o">-</span><span class="mi">20</span><span class="p">.</span><span class="mi">642677</span> <span class="o">-</span><span class="mi">53</span><span class="p">.</span><span class="mi">593434</span> <span class="o">-</span><span class="mi">28</span><span class="p">.</span><span class="mi">619949</span>
+<span class="mi">1952</span>  <span class="mi">63</span><span class="p">.</span><span class="mi">830808</span>  <span class="mi">62</span><span class="p">.</span><span class="mi">823232</span>  <span class="mi">16</span><span class="p">.</span><span class="mi">520202</span> <span class="o">-</span><span class="mi">20</span><span class="p">.</span><span class="mi">642677</span> <span class="o">-</span><span class="mi">53</span><span class="p">.</span><span class="mi">593434</span> <span class="o">-</span><span class="mi">28</span><span class="p">.</span><span class="mi">619949</span>
+<span class="mi">1953</span>  <span class="mi">63</span><span class="p">.</span><span class="mi">830808</span>  <span class="mi">62</span><span class="p">.</span><span class="mi">823232</span>  <span class="mi">16</span><span class="p">.</span><span class="mi">520202</span> <span class="o">-</span><span class="mi">20</span><span class="p">.</span><span class="mi">642677</span> <span class="o">-</span><span class="mi">53</span><span class="p">.</span><span class="mi">593434</span> <span class="o">-</span><span class="mi">28</span><span class="p">.</span><span class="mi">619949</span>
+<span class="mi">1954</span>  <span class="mi">63</span><span class="p">.</span><span class="mi">830808</span>  <span class="mi">62</span><span class="p">.</span><span class="mi">823232</span>  <span class="mi">16</span><span class="p">.</span><span class="mi">520202</span> <span class="o">-</span><span class="mi">20</span><span class="p">.</span><span class="mi">642677</span> <span class="o">-</span><span class="mi">53</span><span class="p">.</span><span class="mi">593434</span> <span class="o">-</span><span class="mi">28</span><span class="p">.</span><span class="mi">619949</span>
+<span class="mi">1955</span>  <span class="mi">63</span><span class="p">.</span><span class="mi">830808</span>  <span class="mi">62</span><span class="p">.</span><span class="mi">823232</span>  <span class="mi">16</span><span class="p">.</span><span class="mi">520202</span> <span class="o">-</span><span class="mi">20</span><span class="p">.</span><span class="mi">642677</span> <span class="o">-</span><span class="mi">53</span><span class="p">.</span><span class="mi">593434</span> <span class="o">-</span><span class="mi">28</span><span class="p">.</span><span class="mi">619949</span>
+<span class="mi">1956</span>  <span class="mi">63</span><span class="p">.</span><span class="mi">830808</span>  <span class="mi">62</span><span class="p">.</span><span class="mi">823232</span>  <span class="mi">16</span><span class="p">.</span><span class="mi">520202</span> <span class="o">-</span><span class="mi">20</span><span class="p">.</span><span class="mi">642677</span> <span class="o">-</span><span class="mi">53</span><span class="p">.</span><span class="mi">593434</span> <span class="o">-</span><span class="mi">28</span><span class="p">.</span><span class="mi">619949</span>
+<span class="mi">1957</span>  <span class="mi">63</span><span class="p">.</span><span class="mi">830808</span>  <span class="mi">62</span><span class="p">.</span><span class="mi">823232</span>  <span class="mi">16</span><span class="p">.</span><span class="mi">520202</span> <span class="o">-</span><span class="mi">20</span><span class="p">.</span><span class="mi">642677</span> <span class="o">-</span><span class="mi">53</span><span class="p">.</span><span class="mi">593434</span> <span class="o">-</span><span class="mi">28</span><span class="p">.</span><span class="mi">619949</span>
+<span class="mi">1958</span>  <span class="mi">63</span><span class="p">.</span><span class="mi">830808</span>  <span class="mi">62</span><span class="p">.</span><span class="mi">823232</span>  <span class="mi">16</span><span class="p">.</span><span class="mi">520202</span> <span class="o">-</span><span class="mi">20</span><span class="p">.</span><span class="mi">642677</span> <span class="o">-</span><span class="mi">53</span><span class="p">.</span><span class="mi">593434</span> <span class="o">-</span><span class="mi">28</span><span class="p">.</span><span class="mi">619949</span>
+<span class="mi">1959</span>  <span class="mi">63</span><span class="p">.</span><span class="mi">830808</span>  <span class="mi">62</span><span class="p">.</span><span class="mi">823232</span>  <span class="mi">16</span><span class="p">.</span><span class="mi">520202</span> <span class="o">-</span><span class="mi">20</span><span class="p">.</span><span class="mi">642677</span> <span class="o">-</span><span class="mi">53</span><span class="p">.</span><span class="mi">593434</span> <span class="o">-</span><span class="mi">28</span><span class="p">.</span><span class="mi">619949</span>
+<span class="mi">1960</span>  <span class="mi">63</span><span class="p">.</span><span class="mi">830808</span>  <span class="mi">62</span><span class="p">.</span><span class="mi">823232</span>  <span class="mi">16</span><span class="p">.</span><span class="mi">520202</span> <span class="o">-</span><span class="mi">20</span><span class="p">.</span><span class="mi">642677</span> <span class="o">-</span><span class="mi">53</span><span class="p">.</span><span class="mi">593434</span> <span class="o">-</span><span class="mi">28</span><span class="p">.</span><span class="mi">619949</span>
+
+<span class="err">$</span><span class="n">trend</span>
+          <span class="n">Jan</span>      <span class="n">Feb</span>      <span class="n">Mar</span>      <span class="n">Apr</span>      <span class="n">May</span>      <span class="n">Jun</span>      <span class="n">Jul</span>      <span class="n">Aug</span>
+<span class="mi">1949</span>       <span class="n">NA</span>       <span class="n">NA</span>       <span class="n">NA</span>       <span class="n">NA</span>       <span class="n">NA</span>       <span class="n">NA</span> <span class="mi">126</span><span class="p">.</span><span class="mi">7917</span> <span class="mi">127</span><span class="p">.</span><span class="mi">2500</span>
+<span class="mi">1950</span> <span class="mi">131</span><span class="p">.</span><span class="mi">2500</span> <span class="mi">133</span><span class="p">.</span><span class="mi">0833</span> <span class="mi">134</span><span class="p">.</span><span class="mi">9167</span> <span class="mi">136</span><span class="p">.</span><span class="mi">4167</span> <span class="mi">137</span><span class="p">.</span><span class="mi">4167</span> <span class="mi">138</span><span class="p">.</span><span class="mi">7500</span> <span class="mi">140</span><span class="p">.</span><span class="mi">9167</span> <span class="mi">143</span><span class="p">.</span><span class="mi">1667</span>
+<span class="mi">1951</span> <span class="mi">157</span><span class="p">.</span><span class="mi">1250</span> <span class="mi">159</span><span class="p">.</span><span class="mi">5417</span> <span class="mi">161</span><span class="p">.</span><span class="mi">8333</span> <span class="mi">164</span><span class="p">.</span><span class="mi">1250</span> <span class="mi">166</span><span class="p">.</span><span class="mi">6667</span> <span class="mi">169</span><span class="p">.</span><span class="mi">0833</span> <span class="mi">171</span><span class="p">.</span><span class="mi">2500</span> <span class="mi">173</span><span class="p">.</span><span class="mi">5833</span>
+<span class="mi">1952</span> <span class="mi">183</span><span class="p">.</span><span class="mi">1250</span> <span class="mi">186</span><span class="p">.</span><span class="mi">2083</span> <span class="mi">189</span><span class="p">.</span><span class="mi">0417</span> <span class="mi">191</span><span class="p">.</span><span class="mi">2917</span> <span class="mi">193</span><span class="p">.</span><span class="mi">5833</span> <span class="mi">195</span><span class="p">.</span><span class="mi">8333</span> <span class="mi">198</span><span class="p">.</span><span class="mi">0417</span> <span class="mi">199</span><span class="p">.</span><span class="mi">7500</span>
+<span class="mi">1953</span> <span class="mi">215</span><span class="p">.</span><span class="mi">8333</span> <span class="mi">218</span><span class="p">.</span><span class="mi">5000</span> <span class="mi">220</span><span class="p">.</span><span class="mi">9167</span> <span class="mi">222</span><span class="p">.</span><span class="mi">9167</span> <span class="mi">224</span><span class="p">.</span><span class="mi">0833</span> <span class="mi">224</span><span class="p">.</span><span class="mi">7083</span> <span class="mi">225</span><span class="p">.</span><span class="mi">3333</span> <span class="mi">225</span><span class="p">.</span><span class="mi">3333</span>
+<span class="mi">1954</span> <span class="mi">228</span><span class="p">.</span><span class="mi">0000</span> <span class="mi">230</span><span class="p">.</span><span class="mi">4583</span> <span class="mi">232</span><span class="p">.</span><span class="mi">2500</span> <span class="mi">233</span><span class="p">.</span><span class="mi">9167</span> <span class="mi">235</span><span class="p">.</span><span class="mi">6250</span> <span class="mi">237</span><span class="p">.</span><span class="mi">7500</span> <span class="mi">240</span><span class="p">.</span><span class="mi">5000</span> <span class="mi">243</span><span class="p">.</span><span class="mi">9583</span>
+<span class="mi">1955</span> <span class="mi">261</span><span class="p">.</span><span class="mi">8333</span> <span class="mi">266</span><span class="p">.</span><span class="mi">6667</span> <span class="mi">271</span><span class="p">.</span><span class="mi">1250</span> <span class="mi">275</span><span class="p">.</span><span class="mi">2083</span> <span class="mi">278</span><span class="p">.</span><span class="mi">5000</span> <span class="mi">281</span><span class="p">.</span><span class="mi">9583</span> <span class="mi">285</span><span class="p">.</span><span class="mi">7500</span> <span class="mi">289</span><span class="p">.</span><span class="mi">3333</span>
+<span class="mi">1956</span> <span class="mi">309</span><span class="p">.</span><span class="mi">9583</span> <span class="mi">314</span><span class="p">.</span><span class="mi">4167</span> <span class="mi">318</span><span class="p">.</span><span class="mi">6250</span> <span class="mi">321</span><span class="p">.</span><span class="mi">7500</span> <span class="mi">324</span><span class="p">.</span><span class="mi">5000</span> <span class="mi">327</span><span class="p">.</span><span class="mi">0833</span> <span class="mi">329</span><span class="p">.</span><span class="mi">5417</span> <span class="mi">331</span><span class="p">.</span><span class="mi">8333</span>
+<span class="mi">1957</span> <span class="mi">348</span><span class="p">.</span><span class="mi">2500</span> <span class="mi">353</span><span class="p">.</span><span class="mi">0000</span> <span class="mi">357</span><span class="p">.</span><span class="mi">6250</span> <span class="mi">361</span><span class="p">.</span><span class="mi">3750</span> <span class="mi">364</span><span class="p">.</span><span class="mi">5000</span> <span class="mi">367</span><span class="p">.</span><span class="mi">1667</span> <span class="mi">369</span><span class="p">.</span><span class="mi">4583</span> <span class="mi">371</span><span class="p">.</span><span class="mi">2083</span>
+<span class="mi">1958</span> <span class="mi">375</span><span class="p">.</span><span class="mi">2500</span> <span class="mi">377</span><span class="p">.</span><span class="mi">9167</span> <span class="mi">379</span><span class="p">.</span><span class="mi">5000</span> <span class="mi">380</span><span class="p">.</span><span class="mi">0000</span> <span class="mi">380</span><span class="p">.</span><span class="mi">7083</span> <span class="mi">380</span><span class="p">.</span><span class="mi">9583</span> <span class="mi">381</span><span class="p">.</span><span class="mi">8333</span> <span class="mi">383</span><span class="p">.</span><span class="mi">6667</span>
+<span class="mi">1959</span> <span class="mi">402</span><span class="p">.</span><span class="mi">5417</span> <span class="mi">407</span><span class="p">.</span><span class="mi">1667</span> <span class="mi">411</span><span class="p">.</span><span class="mi">8750</span> <span class="mi">416</span><span class="p">.</span><span class="mi">3333</span> <span class="mi">420</span><span class="p">.</span><span class="mi">5000</span> <span class="mi">425</span><span class="p">.</span><span class="mi">5000</span> <span class="mi">430</span><span class="p">.</span><span class="mi">7083</span> <span class="mi">435</span><span class="p">.</span><span class="mi">1250</span>
+<span class="mi">1960</span> <span class="mi">456</span><span class="p">.</span><span class="mi">3333</span> <span class="mi">461</span><span class="p">.</span><span class="mi">3750</span> <span class="mi">465</span><span class="p">.</span><span class="mi">2083</span> <span class="mi">469</span><span class="p">.</span><span class="mi">3333</span> <span class="mi">472</span><span class="p">.</span><span class="mi">7500</span> <span class="mi">475</span><span class="p">.</span><span class="mi">0417</span>       <span class="n">NA</span>       <span class="n">NA</span>
+          <span class="n">Sep</span>      <span class="n">Oct</span>      <span class="n">Nov</span>      <span class="nb">Dec</span>
+<span class="mi">1949</span> <span class="mi">127</span><span class="p">.</span><span class="mi">9583</span> <span class="mi">128</span><span class="p">.</span><span class="mi">5833</span> <span class="mi">129</span><span class="p">.</span><span class="mi">0000</span> <span class="mi">129</span><span class="p">.</span><span class="mi">7500</span>
+<span class="mi">1950</span> <span class="mi">145</span><span class="p">.</span><span class="mi">7083</span> <span class="mi">148</span><span class="p">.</span><span class="mi">4167</span> <span class="mi">151</span><span class="p">.</span><span class="mi">5417</span> <span class="mi">154</span><span class="p">.</span><span class="mi">7083</span>
+<span class="mi">1951</span> <span class="mi">175</span><span class="p">.</span><span class="mi">4583</span> <span class="mi">176</span><span class="p">.</span><span class="mi">8333</span> <span class="mi">178</span><span class="p">.</span><span class="mi">0417</span> <span class="mi">180</span><span class="p">.</span><span class="mi">1667</span>
+<span class="mi">1952</span> <span class="mi">202</span><span class="p">.</span><span class="mi">2083</span> <span class="mi">206</span><span class="p">.</span><span class="mi">2500</span> <span class="mi">210</span><span class="p">.</span><span class="mi">4167</span> <span class="mi">213</span><span class="p">.</span><span class="mi">3750</span>
+<span class="mi">1953</span> <span class="mi">224</span><span class="p">.</span><span class="mi">9583</span> <span class="mi">224</span><span class="p">.</span><span class="mi">5833</span> <span class="mi">224</span><span class="p">.</span><span class="mi">4583</span> <span class="mi">225</span><span class="p">.</span><span class="mi">5417</span>
+<span class="mi">1954</span> <span class="mi">247</span><span class="p">.</span><span class="mi">1667</span> <span class="mi">250</span><span class="p">.</span><span class="mi">2500</span> <span class="mi">253</span><span class="p">.</span><span class="mi">5000</span> <span class="mi">257</span><span class="p">.</span><span class="mi">1250</span>
+<span class="mi">1955</span> <span class="mi">293</span><span class="p">.</span><span class="mi">2500</span> <span class="mi">297</span><span class="p">.</span><span class="mi">1667</span> <span class="mi">301</span><span class="p">.</span><span class="mi">0000</span> <span class="mi">305</span><span class="p">.</span><span class="mi">4583</span>
+<span class="mi">1956</span> <span class="mi">334</span><span class="p">.</span><span class="mi">4583</span> <span class="mi">337</span><span class="p">.</span><span class="mi">5417</span> <span class="mi">340</span><span class="p">.</span><span class="mi">5417</span> <span class="mi">344</span><span class="p">.</span><span class="mi">0833</span>
+<span class="mi">1957</span> <span class="mi">372</span><span class="p">.</span><span class="mi">1667</span> <span class="mi">372</span><span class="p">.</span><span class="mi">4167</span> <span class="mi">372</span><span class="p">.</span><span class="mi">7500</span> <span class="mi">373</span><span class="p">.</span><span class="mi">6250</span>
+<span class="mi">1958</span> <span class="mi">386</span><span class="p">.</span><span class="mi">5000</span> <span class="mi">390</span><span class="p">.</span><span class="mi">3333</span> <span class="mi">394</span><span class="p">.</span><span class="mi">7083</span> <span class="mi">398</span><span class="p">.</span><span class="mi">6250</span>
+<span class="mi">1959</span> <span class="mi">437</span><span class="p">.</span><span class="mi">7083</span> <span class="mi">440</span><span class="p">.</span><span class="mi">9583</span> <span class="mi">445</span><span class="p">.</span><span class="mi">8333</span> <span class="mi">450</span><span class="p">.</span><span class="mi">6250</span>
+<span class="mi">1960</span>       <span class="n">NA</span>       <span class="n">NA</span>       <span class="n">NA</span>       <span class="n">NA</span>
+
+<span class="err">$</span><span class="n">random</span>
+             <span class="n">Jan</span>         <span class="n">Feb</span>         <span class="n">Mar</span>         <span class="n">Apr</span>         <span class="n">May</span>         <span class="n">Jun</span>
+<span class="mi">1949</span>          <span class="n">NA</span>          <span class="n">NA</span>          <span class="n">NA</span>          <span class="n">NA</span>          <span class="n">NA</span>          <span class="n">NA</span>
+<span class="mi">1950</span>   <span class="mi">8</span><span class="p">.</span><span class="mi">4987374</span>  <span class="mi">29</span><span class="p">.</span><span class="mi">1047980</span>   <span class="mi">8</span><span class="p">.</span><span class="mi">3244949</span>   <span class="mi">6</span><span class="p">.</span><span class="mi">6199495</span>  <span class="o">-</span><span class="mi">7</span><span class="p">.</span><span class="mi">9103535</span> <span class="o">-</span><span class="mi">25</span><span class="p">.</span><span class="mi">1527778</span>
+<span class="mi">1951</span>  <span class="mi">12</span><span class="p">.</span><span class="mi">6237374</span>  <span class="mi">26</span><span class="p">.</span><span class="mi">6464646</span>  <span class="mi">18</span><span class="p">.</span><span class="mi">4078283</span>   <span class="mi">6</span><span class="p">.</span><span class="mi">9116162</span>   <span class="mi">9</span><span class="p">.</span><span class="mi">8396465</span> <span class="o">-</span><span class="mi">26</span><span class="p">.</span><span class="mi">4861111</span>
+<span class="mi">1952</span>  <span class="mi">12</span><span class="p">.</span><span class="mi">6237374</span>  <span class="mi">29</span><span class="p">.</span><span class="mi">9797980</span>   <span class="mi">6</span><span class="p">.</span><span class="mi">1994949</span>  <span class="o">-</span><span class="mi">2</span><span class="p">.</span><span class="mi">2550505</span>  <span class="o">-</span><span class="mi">6</span><span class="p">.</span><span class="mi">0770202</span> <span class="o">-</span><span class="mi">13</span><span class="p">.</span><span class="mi">2361111</span>
+<span class="mi">1953</span>   <span class="mi">4</span><span class="p">.</span><span class="mi">9154040</span>  <span class="mi">13</span><span class="p">.</span><span class="mi">6881313</span>  <span class="mi">17</span><span class="p">.</span><span class="mi">3244949</span>  <span class="mi">20</span><span class="p">.</span><span class="mi">1199495</span>   <span class="mi">9</span><span class="p">.</span><span class="mi">4229798</span> <span class="o">-</span><span class="mi">17</span><span class="p">.</span><span class="mi">1111111</span>
+<span class="mi">1954</span>   <span class="mi">0</span><span class="p">.</span><span class="mi">7487374</span>  <span class="o">-</span><span class="mi">6</span><span class="p">.</span><span class="mi">2702020</span>   <span class="mi">4</span><span class="p">.</span><span class="mi">9911616</span>   <span class="mi">1</span><span class="p">.</span><span class="mi">1199495</span>   <span class="mi">2</span><span class="p">.</span><span class="mi">8813131</span>  <span class="o">-</span><span class="mi">9</span><span class="p">.</span><span class="mi">1527778</span>
+<span class="mi">1955</span>   <span class="mi">4</span><span class="p">.</span><span class="mi">9154040</span>   <span class="mi">2</span><span class="p">.</span><span class="mi">5214646</span>  <span class="o">-</span><span class="mi">1</span><span class="p">.</span><span class="mi">8838384</span>   <span class="mi">1</span><span class="p">.</span><span class="mi">8282828</span>  <span class="o">-</span><span class="mi">3</span><span class="p">.</span><span class="mi">9936869</span>  <span class="o">-</span><span class="mi">2</span><span class="p">.</span><span class="mi">3611111</span>
+<span class="mi">1956</span>  <span class="o">-</span><span class="mi">1</span><span class="p">.</span><span class="mi">2095960</span>  <span class="o">-</span><span class="mi">1</span><span class="p">.</span><span class="mi">2285354</span>   <span class="mi">0</span><span class="p">.</span><span class="mi">6161616</span>  <span class="o">-</span><span class="mi">0</span><span class="p">.</span><span class="mi">7133838</span>  <span class="o">-</span><span class="mi">1</span><span class="p">.</span><span class="mi">9936869</span>  <span class="mi">11</span><span class="p">.</span><span class="mi">5138889</span>
+<span class="mi">1957</span>  <span class="o">-</span><span class="mi">8</span><span class="p">.</span><span class="mi">5012626</span> <span class="o">-</span><span class="mi">15</span><span class="p">.</span><span class="mi">8118687</span>   <span class="mi">0</span><span class="p">.</span><span class="mi">6161616</span>  <span class="o">-</span><span class="mi">5</span><span class="p">.</span><span class="mi">3383838</span>  <span class="o">-</span><span class="mi">4</span><span class="p">.</span><span class="mi">9936869</span>  <span class="mi">19</span><span class="p">.</span><span class="mi">4305556</span>
+<span class="mi">1958</span> <span class="o">-</span><span class="mi">10</span><span class="p">.</span><span class="mi">5012626</span> <span class="o">-</span><span class="mi">23</span><span class="p">.</span><span class="mi">7285354</span> <span class="o">-</span><span class="mi">15</span><span class="p">.</span><span class="mi">2588384</span> <span class="o">-</span><span class="mi">23</span><span class="p">.</span><span class="mi">9633838</span> <span class="o">-</span><span class="mi">13</span><span class="p">.</span><span class="mi">2020202</span>  <span class="mi">18</span><span class="p">.</span><span class="mi">6388889</span>
+<span class="mi">1959</span> <span class="o">-</span><span class="mi">17</span><span class="p">.</span><span class="mi">7929293</span> <span class="o">-</span><span class="mi">28</span><span class="p">.</span><span class="mi">9785354</span>  <span class="o">-</span><span class="mi">3</span><span class="p">.</span><span class="mi">6338384</span> <span class="o">-</span><span class="mi">12</span><span class="p">.</span><span class="mi">2967172</span>   <span class="mi">4</span><span class="p">.</span><span class="mi">0063131</span>  <span class="mi">11</span><span class="p">.</span><span class="mi">0972222</span>
+<span class="mi">1960</span> <span class="o">-</span><span class="mi">14</span><span class="p">.</span><span class="mi">5845960</span> <span class="o">-</span><span class="mi">34</span><span class="p">.</span><span class="mi">1868687</span> <span class="o">-</span><span class="mi">43</span><span class="p">.</span><span class="mi">9671717</span>  <span class="o">-</span><span class="mi">0</span><span class="p">.</span><span class="mi">2967172</span>   <span class="mi">3</span><span class="p">.</span><span class="mi">7563131</span>  <span class="mi">24</span><span class="p">.</span><span class="mi">5555556</span>
+             <span class="n">Jul</span>         <span class="n">Aug</span>         <span class="n">Sep</span>         <span class="n">Oct</span>         <span class="n">Nov</span>         <span class="nb">Dec</span>
+<span class="mi">1949</span> <span class="o">-</span><span class="mi">42</span><span class="p">.</span><span class="mi">6224747</span> <span class="o">-</span><span class="mi">42</span><span class="p">.</span><span class="mi">0732323</span>  <span class="o">-</span><span class="mi">8</span><span class="p">.</span><span class="mi">4785354</span>  <span class="mi">11</span><span class="p">.</span><span class="mi">0593434</span>  <span class="mi">28</span><span class="p">.</span><span class="mi">5934343</span>  <span class="mi">16</span><span class="p">.</span><span class="mi">8699495</span>
+<span class="mi">1950</span> <span class="o">-</span><span class="mi">34</span><span class="p">.</span><span class="mi">7474747</span> <span class="o">-</span><span class="mi">35</span><span class="p">.</span><span class="mi">9898990</span>  <span class="o">-</span><span class="mi">4</span><span class="p">.</span><span class="mi">2285354</span>   <span class="mi">5</span><span class="p">.</span><span class="mi">2260101</span>  <span class="mi">16</span><span class="p">.</span><span class="mi">0517677</span>  <span class="mi">13</span><span class="p">.</span><span class="mi">9116162</span>
+<span class="mi">1951</span> <span class="o">-</span><span class="mi">36</span><span class="p">.</span><span class="mi">0808081</span> <span class="o">-</span><span class="mi">37</span><span class="p">.</span><span class="mi">4065657</span>  <span class="o">-</span><span class="mi">7</span><span class="p">.</span><span class="mi">9785354</span>   <span class="mi">5</span><span class="p">.</span><span class="mi">8093434</span>  <span class="mi">21</span><span class="p">.</span><span class="mi">5517677</span>  <span class="mi">14</span><span class="p">.</span><span class="mi">4532828</span>
+<span class="mi">1952</span> <span class="o">-</span><span class="mi">31</span><span class="p">.</span><span class="mi">8724747</span> <span class="o">-</span><span class="mi">20</span><span class="p">.</span><span class="mi">5732323</span>  <span class="o">-</span><span class="mi">9</span><span class="p">.</span><span class="mi">7285354</span>   <span class="mi">5</span><span class="p">.</span><span class="mi">3926768</span>  <span class="mi">15</span><span class="p">.</span><span class="mi">1767677</span>   <span class="mi">9</span><span class="p">.</span><span class="mi">2449495</span>
+<span class="mi">1953</span> <span class="o">-</span><span class="mi">25</span><span class="p">.</span><span class="mi">1641414</span> <span class="o">-</span><span class="mi">16</span><span class="p">.</span><span class="mi">1565657</span>  <span class="o">-</span><span class="mi">4</span><span class="p">.</span><span class="mi">4785354</span>   <span class="mi">7</span><span class="p">.</span><span class="mi">0593434</span>   <span class="mi">9</span><span class="p">.</span><span class="mi">1351010</span>   <span class="mi">4</span><span class="p">.</span><span class="mi">0782828</span>
+<span class="mi">1954</span>  <span class="o">-</span><span class="mi">2</span><span class="p">.</span><span class="mi">3308081</span> <span class="o">-</span><span class="mi">13</span><span class="p">.</span><span class="mi">7815657</span>  <span class="o">-</span><span class="mi">4</span><span class="p">.</span><span class="mi">6868687</span>  <span class="o">-</span><span class="mi">0</span><span class="p">.</span><span class="mi">6073232</span>   <span class="mi">3</span><span class="p">.</span><span class="mi">0934343</span>   <span class="mi">0</span><span class="p">.</span><span class="mi">4949495</span>
+<span class="mi">1955</span>  <span class="mi">14</span><span class="p">.</span><span class="mi">4191919</span>  <span class="o">-</span><span class="mi">5</span><span class="p">.</span><span class="mi">1565657</span>   <span class="mi">2</span><span class="p">.</span><span class="mi">2297980</span>  <span class="o">-</span><span class="mi">2</span><span class="p">.</span><span class="mi">5239899</span> <span class="o">-</span><span class="mi">10</span><span class="p">.</span><span class="mi">4065657</span>   <span class="mi">1</span><span class="p">.</span><span class="mi">1616162</span>
+<span class="mi">1956</span>  <span class="mi">19</span><span class="p">.</span><span class="mi">6275253</span>  <span class="mi">10</span><span class="p">.</span><span class="mi">3434343</span>   <span class="mi">4</span><span class="p">.</span><span class="mi">0214646</span> <span class="o">-</span><span class="mi">10</span><span class="p">.</span><span class="mi">8989899</span> <span class="o">-</span><span class="mi">15</span><span class="p">.</span><span class="mi">9482323</span>  <span class="o">-</span><span class="mi">9</span><span class="p">.</span><span class="mi">4633838</span>
+<span class="mi">1957</span>  <span class="mi">31</span><span class="p">.</span><span class="mi">7108586</span>  <span class="mi">32</span><span class="p">.</span><span class="mi">9684343</span>  <span class="mi">15</span><span class="p">.</span><span class="mi">3131313</span>  <span class="o">-</span><span class="mi">4</span><span class="p">.</span><span class="mi">7739899</span> <span class="o">-</span><span class="mi">14</span><span class="p">.</span><span class="mi">1565657</span>  <span class="o">-</span><span class="mi">9</span><span class="p">.</span><span class="mi">0050505</span>
+<span class="mi">1958</span>  <span class="mi">45</span><span class="p">.</span><span class="mi">3358586</span>  <span class="mi">58</span><span class="p">.</span><span class="mi">5101010</span>   <span class="mi">0</span><span class="p">.</span><span class="mi">9797980</span> <span class="o">-</span><span class="mi">10</span><span class="p">.</span><span class="mi">6906566</span> <span class="o">-</span><span class="mi">31</span><span class="p">.</span><span class="mi">1148990</span> <span class="o">-</span><span class="mi">33</span><span class="p">.</span><span class="mi">0050505</span>
+<span class="mi">1959</span>  <span class="mi">53</span><span class="p">.</span><span class="mi">4608586</span>  <span class="mi">61</span><span class="p">.</span><span class="mi">0517677</span>   <span class="mi">8</span><span class="p">.</span><span class="mi">7714646</span> <span class="o">-</span><span class="mi">13</span><span class="p">.</span><span class="mi">3156566</span> <span class="o">-</span><span class="mi">30</span><span class="p">.</span><span class="mi">2398990</span> <span class="o">-</span><span class="mi">17</span><span class="p">.</span><span class="mi">0050505</span>
+<span class="mi">1960</span>          <span class="n">NA</span>          <span class="n">NA</span>          <span class="n">NA</span>          <span class="n">NA</span>          <span class="n">NA</span>          <span class="n">NA</span>
+
+<span class="err">$</span><span class="n">figure</span>
+ <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span><span class="mi">24</span><span class="p">.</span><span class="mi">748737</span> <span class="o">-</span><span class="mi">36</span><span class="p">.</span><span class="mi">188131</span>  <span class="o">-</span><span class="mi">2</span><span class="p">.</span><span class="mi">241162</span>  <span class="o">-</span><span class="mi">8</span><span class="p">.</span><span class="mi">036616</span>  <span class="o">-</span><span class="mi">4</span><span class="p">.</span><span class="mi">506313</span>  <span class="mi">35</span><span class="p">.</span><span class="mi">402778</span>
+ <span class="p">[</span><span class="mi">7</span><span class="p">]</span>  <span class="mi">63</span><span class="p">.</span><span class="mi">830808</span>  <span class="mi">62</span><span class="p">.</span><span class="mi">823232</span>  <span class="mi">16</span><span class="p">.</span><span class="mi">520202</span> <span class="o">-</span><span class="mi">20</span><span class="p">.</span><span class="mi">642677</span> <span class="o">-</span><span class="mi">53</span><span class="p">.</span><span class="mi">593434</span> <span class="o">-</span><span class="mi">28</span><span class="p">.</span><span class="mi">619949</span>
+
+<span class="err">$</span><span class="k">type</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ss">&quot;additive&quot;</span>
+
+<span class="n">attr</span><span class="p">(,</span><span class="ss">&quot;class&quot;</span><span class="p">)</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ss">&quot;decomposed.ts&quot;</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="nf">decompose</span><span class="p">(</span><span class="n">ts_ap</span><span class="p">,</span><span class="n">type</span> <span class="o">=</span> <span class="s">&#39;multiplicative&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="err">$</span><span class="n">x</span>
+     <span class="n">Jan</span> <span class="n">Feb</span> <span class="n">Mar</span> <span class="n">Apr</span> <span class="n">May</span> <span class="n">Jun</span> <span class="n">Jul</span> <span class="n">Aug</span> <span class="n">Sep</span> <span class="n">Oct</span> <span class="n">Nov</span> <span class="nb">Dec</span>
+<span class="mi">1949</span> <span class="mi">112</span> <span class="mi">118</span> <span class="mi">132</span> <span class="mi">129</span> <span class="mi">121</span> <span class="mi">135</span> <span class="mi">148</span> <span class="mi">148</span> <span class="mi">136</span> <span class="mi">119</span> <span class="mi">104</span> <span class="mi">118</span>
+<span class="mi">1950</span> <span class="mi">115</span> <span class="mi">126</span> <span class="mi">141</span> <span class="mi">135</span> <span class="mi">125</span> <span class="mi">149</span> <span class="mi">170</span> <span class="mi">170</span> <span class="mi">158</span> <span class="mi">133</span> <span class="mi">114</span> <span class="mi">140</span>
+<span class="mi">1951</span> <span class="mi">145</span> <span class="mi">150</span> <span class="mi">178</span> <span class="mi">163</span> <span class="mi">172</span> <span class="mi">178</span> <span class="mi">199</span> <span class="mi">199</span> <span class="mi">184</span> <span class="mi">162</span> <span class="mi">146</span> <span class="mi">166</span>
+<span class="mi">1952</span> <span class="mi">171</span> <span class="mi">180</span> <span class="mi">193</span> <span class="mi">181</span> <span class="mi">183</span> <span class="mi">218</span> <span class="mi">230</span> <span class="mi">242</span> <span class="mi">209</span> <span class="mi">191</span> <span class="mi">172</span> <span class="mi">194</span>
+<span class="mi">1953</span> <span class="mi">196</span> <span class="mi">196</span> <span class="mi">236</span> <span class="mi">235</span> <span class="mi">229</span> <span class="mi">243</span> <span class="mi">264</span> <span class="mi">272</span> <span class="mi">237</span> <span class="mi">211</span> <span class="mi">180</span> <span class="mi">201</span>
+<span class="mi">1954</span> <span class="mi">204</span> <span class="mi">188</span> <span class="mi">235</span> <span class="mi">227</span> <span class="mi">234</span> <span class="mi">264</span> <span class="mi">302</span> <span class="mi">293</span> <span class="mi">259</span> <span class="mi">229</span> <span class="mi">203</span> <span class="mi">229</span>
+<span class="mi">1955</span> <span class="mi">242</span> <span class="mi">233</span> <span class="mi">267</span> <span class="mi">269</span> <span class="mi">270</span> <span class="mi">315</span> <span class="mi">364</span> <span class="mi">347</span> <span class="mi">312</span> <span class="mi">274</span> <span class="mi">237</span> <span class="mi">278</span>
+<span class="mi">1956</span> <span class="mi">284</span> <span class="mi">277</span> <span class="mi">317</span> <span class="mi">313</span> <span class="mi">318</span> <span class="mi">374</span> <span class="mi">413</span> <span class="mi">405</span> <span class="mi">355</span> <span class="mi">306</span> <span class="mi">271</span> <span class="mi">306</span>
+<span class="mi">1957</span> <span class="mi">315</span> <span class="mi">301</span> <span class="mi">356</span> <span class="mi">348</span> <span class="mi">355</span> <span class="mi">422</span> <span class="mi">465</span> <span class="mi">467</span> <span class="mi">404</span> <span class="mi">347</span> <span class="mi">305</span> <span class="mi">336</span>
+<span class="mi">1958</span> <span class="mi">340</span> <span class="mi">318</span> <span class="mi">362</span> <span class="mi">348</span> <span class="mi">363</span> <span class="mi">435</span> <span class="mi">491</span> <span class="mi">505</span> <span class="mi">404</span> <span class="mi">359</span> <span class="mi">310</span> <span class="mi">337</span>
+<span class="mi">1959</span> <span class="mi">360</span> <span class="mi">342</span> <span class="mi">406</span> <span class="mi">396</span> <span class="mi">420</span> <span class="mi">472</span> <span class="mi">548</span> <span class="mi">559</span> <span class="mi">463</span> <span class="mi">407</span> <span class="mi">362</span> <span class="mi">405</span>
+<span class="mi">1960</span> <span class="mi">417</span> <span class="mi">391</span> <span class="mi">419</span> <span class="mi">461</span> <span class="mi">472</span> <span class="mi">535</span> <span class="mi">622</span> <span class="mi">606</span> <span class="mi">508</span> <span class="mi">461</span> <span class="mi">390</span> <span class="mi">432</span>
+
+<span class="err">$</span><span class="n">seasonal</span>
+           <span class="n">Jan</span>       <span class="n">Feb</span>       <span class="n">Mar</span>       <span class="n">Apr</span>       <span class="n">May</span>       <span class="n">Jun</span>       <span class="n">Jul</span>
+<span class="mi">1949</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9102304</span> <span class="mi">0</span><span class="p">.</span><span class="mi">8836253</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0073663</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9759060</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9813780</span> <span class="mi">1</span><span class="p">.</span><span class="mi">1127758</span> <span class="mi">1</span><span class="p">.</span><span class="mi">2265555</span>
+<span class="mi">1950</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9102304</span> <span class="mi">0</span><span class="p">.</span><span class="mi">8836253</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0073663</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9759060</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9813780</span> <span class="mi">1</span><span class="p">.</span><span class="mi">1127758</span> <span class="mi">1</span><span class="p">.</span><span class="mi">2265555</span>
+<span class="mi">1951</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9102304</span> <span class="mi">0</span><span class="p">.</span><span class="mi">8836253</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0073663</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9759060</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9813780</span> <span class="mi">1</span><span class="p">.</span><span class="mi">1127758</span> <span class="mi">1</span><span class="p">.</span><span class="mi">2265555</span>
+<span class="mi">1952</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9102304</span> <span class="mi">0</span><span class="p">.</span><span class="mi">8836253</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0073663</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9759060</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9813780</span> <span class="mi">1</span><span class="p">.</span><span class="mi">1127758</span> <span class="mi">1</span><span class="p">.</span><span class="mi">2265555</span>
+<span class="mi">1953</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9102304</span> <span class="mi">0</span><span class="p">.</span><span class="mi">8836253</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0073663</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9759060</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9813780</span> <span class="mi">1</span><span class="p">.</span><span class="mi">1127758</span> <span class="mi">1</span><span class="p">.</span><span class="mi">2265555</span>
+<span class="mi">1954</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9102304</span> <span class="mi">0</span><span class="p">.</span><span class="mi">8836253</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0073663</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9759060</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9813780</span> <span class="mi">1</span><span class="p">.</span><span class="mi">1127758</span> <span class="mi">1</span><span class="p">.</span><span class="mi">2265555</span>
+<span class="mi">1955</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9102304</span> <span class="mi">0</span><span class="p">.</span><span class="mi">8836253</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0073663</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9759060</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9813780</span> <span class="mi">1</span><span class="p">.</span><span class="mi">1127758</span> <span class="mi">1</span><span class="p">.</span><span class="mi">2265555</span>
+<span class="mi">1956</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9102304</span> <span class="mi">0</span><span class="p">.</span><span class="mi">8836253</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0073663</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9759060</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9813780</span> <span class="mi">1</span><span class="p">.</span><span class="mi">1127758</span> <span class="mi">1</span><span class="p">.</span><span class="mi">2265555</span>
+<span class="mi">1957</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9102304</span> <span class="mi">0</span><span class="p">.</span><span class="mi">8836253</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0073663</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9759060</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9813780</span> <span class="mi">1</span><span class="p">.</span><span class="mi">1127758</span> <span class="mi">1</span><span class="p">.</span><span class="mi">2265555</span>
+<span class="mi">1958</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9102304</span> <span class="mi">0</span><span class="p">.</span><span class="mi">8836253</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0073663</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9759060</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9813780</span> <span class="mi">1</span><span class="p">.</span><span class="mi">1127758</span> <span class="mi">1</span><span class="p">.</span><span class="mi">2265555</span>
+<span class="mi">1959</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9102304</span> <span class="mi">0</span><span class="p">.</span><span class="mi">8836253</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0073663</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9759060</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9813780</span> <span class="mi">1</span><span class="p">.</span><span class="mi">1127758</span> <span class="mi">1</span><span class="p">.</span><span class="mi">2265555</span>
+<span class="mi">1960</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9102304</span> <span class="mi">0</span><span class="p">.</span><span class="mi">8836253</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0073663</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9759060</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9813780</span> <span class="mi">1</span><span class="p">.</span><span class="mi">1127758</span> <span class="mi">1</span><span class="p">.</span><span class="mi">2265555</span>
+           <span class="n">Aug</span>       <span class="n">Sep</span>       <span class="n">Oct</span>       <span class="n">Nov</span>       <span class="nb">Dec</span>
+<span class="mi">1949</span> <span class="mi">1</span><span class="p">.</span><span class="mi">2199110</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0604919</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9217572</span> <span class="mi">0</span><span class="p">.</span><span class="mi">8011781</span> <span class="mi">0</span><span class="p">.</span><span class="mi">8988244</span>
+<span class="mi">1950</span> <span class="mi">1</span><span class="p">.</span><span class="mi">2199110</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0604919</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9217572</span> <span class="mi">0</span><span class="p">.</span><span class="mi">8011781</span> <span class="mi">0</span><span class="p">.</span><span class="mi">8988244</span>
+<span class="mi">1951</span> <span class="mi">1</span><span class="p">.</span><span class="mi">2199110</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0604919</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9217572</span> <span class="mi">0</span><span class="p">.</span><span class="mi">8011781</span> <span class="mi">0</span><span class="p">.</span><span class="mi">8988244</span>
+<span class="mi">1952</span> <span class="mi">1</span><span class="p">.</span><span class="mi">2199110</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0604919</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9217572</span> <span class="mi">0</span><span class="p">.</span><span class="mi">8011781</span> <span class="mi">0</span><span class="p">.</span><span class="mi">8988244</span>
+<span class="mi">1953</span> <span class="mi">1</span><span class="p">.</span><span class="mi">2199110</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0604919</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9217572</span> <span class="mi">0</span><span class="p">.</span><span class="mi">8011781</span> <span class="mi">0</span><span class="p">.</span><span class="mi">8988244</span>
+<span class="mi">1954</span> <span class="mi">1</span><span class="p">.</span><span class="mi">2199110</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0604919</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9217572</span> <span class="mi">0</span><span class="p">.</span><span class="mi">8011781</span> <span class="mi">0</span><span class="p">.</span><span class="mi">8988244</span>
+<span class="mi">1955</span> <span class="mi">1</span><span class="p">.</span><span class="mi">2199110</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0604919</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9217572</span> <span class="mi">0</span><span class="p">.</span><span class="mi">8011781</span> <span class="mi">0</span><span class="p">.</span><span class="mi">8988244</span>
+<span class="mi">1956</span> <span class="mi">1</span><span class="p">.</span><span class="mi">2199110</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0604919</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9217572</span> <span class="mi">0</span><span class="p">.</span><span class="mi">8011781</span> <span class="mi">0</span><span class="p">.</span><span class="mi">8988244</span>
+<span class="mi">1957</span> <span class="mi">1</span><span class="p">.</span><span class="mi">2199110</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0604919</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9217572</span> <span class="mi">0</span><span class="p">.</span><span class="mi">8011781</span> <span class="mi">0</span><span class="p">.</span><span class="mi">8988244</span>
+<span class="mi">1958</span> <span class="mi">1</span><span class="p">.</span><span class="mi">2199110</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0604919</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9217572</span> <span class="mi">0</span><span class="p">.</span><span class="mi">8011781</span> <span class="mi">0</span><span class="p">.</span><span class="mi">8988244</span>
+<span class="mi">1959</span> <span class="mi">1</span><span class="p">.</span><span class="mi">2199110</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0604919</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9217572</span> <span class="mi">0</span><span class="p">.</span><span class="mi">8011781</span> <span class="mi">0</span><span class="p">.</span><span class="mi">8988244</span>
+<span class="mi">1960</span> <span class="mi">1</span><span class="p">.</span><span class="mi">2199110</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0604919</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9217572</span> <span class="mi">0</span><span class="p">.</span><span class="mi">8011781</span> <span class="mi">0</span><span class="p">.</span><span class="mi">8988244</span>
+
+<span class="err">$</span><span class="n">trend</span>
+          <span class="n">Jan</span>      <span class="n">Feb</span>      <span class="n">Mar</span>      <span class="n">Apr</span>      <span class="n">May</span>      <span class="n">Jun</span>      <span class="n">Jul</span>      <span class="n">Aug</span>
+<span class="mi">1949</span>       <span class="n">NA</span>       <span class="n">NA</span>       <span class="n">NA</span>       <span class="n">NA</span>       <span class="n">NA</span>       <span class="n">NA</span> <span class="mi">126</span><span class="p">.</span><span class="mi">7917</span> <span class="mi">127</span><span class="p">.</span><span class="mi">2500</span>
+<span class="mi">1950</span> <span class="mi">131</span><span class="p">.</span><span class="mi">2500</span> <span class="mi">133</span><span class="p">.</span><span class="mi">0833</span> <span class="mi">134</span><span class="p">.</span><span class="mi">9167</span> <span class="mi">136</span><span class="p">.</span><span class="mi">4167</span> <span class="mi">137</span><span class="p">.</span><span class="mi">4167</span> <span class="mi">138</span><span class="p">.</span><span class="mi">7500</span> <span class="mi">140</span><span class="p">.</span><span class="mi">9167</span> <span class="mi">143</span><span class="p">.</span><span class="mi">1667</span>
+<span class="mi">1951</span> <span class="mi">157</span><span class="p">.</span><span class="mi">1250</span> <span class="mi">159</span><span class="p">.</span><span class="mi">5417</span> <span class="mi">161</span><span class="p">.</span><span class="mi">8333</span> <span class="mi">164</span><span class="p">.</span><span class="mi">1250</span> <span class="mi">166</span><span class="p">.</span><span class="mi">6667</span> <span class="mi">169</span><span class="p">.</span><span class="mi">0833</span> <span class="mi">171</span><span class="p">.</span><span class="mi">2500</span> <span class="mi">173</span><span class="p">.</span><span class="mi">5833</span>
+<span class="mi">1952</span> <span class="mi">183</span><span class="p">.</span><span class="mi">1250</span> <span class="mi">186</span><span class="p">.</span><span class="mi">2083</span> <span class="mi">189</span><span class="p">.</span><span class="mi">0417</span> <span class="mi">191</span><span class="p">.</span><span class="mi">2917</span> <span class="mi">193</span><span class="p">.</span><span class="mi">5833</span> <span class="mi">195</span><span class="p">.</span><span class="mi">8333</span> <span class="mi">198</span><span class="p">.</span><span class="mi">0417</span> <span class="mi">199</span><span class="p">.</span><span class="mi">7500</span>
+<span class="mi">1953</span> <span class="mi">215</span><span class="p">.</span><span class="mi">8333</span> <span class="mi">218</span><span class="p">.</span><span class="mi">5000</span> <span class="mi">220</span><span class="p">.</span><span class="mi">9167</span> <span class="mi">222</span><span class="p">.</span><span class="mi">9167</span> <span class="mi">224</span><span class="p">.</span><span class="mi">0833</span> <span class="mi">224</span><span class="p">.</span><span class="mi">7083</span> <span class="mi">225</span><span class="p">.</span><span class="mi">3333</span> <span class="mi">225</span><span class="p">.</span><span class="mi">3333</span>
+<span class="mi">1954</span> <span class="mi">228</span><span class="p">.</span><span class="mi">0000</span> <span class="mi">230</span><span class="p">.</span><span class="mi">4583</span> <span class="mi">232</span><span class="p">.</span><span class="mi">2500</span> <span class="mi">233</span><span class="p">.</span><span class="mi">9167</span> <span class="mi">235</span><span class="p">.</span><span class="mi">6250</span> <span class="mi">237</span><span class="p">.</span><span class="mi">7500</span> <span class="mi">240</span><span class="p">.</span><span class="mi">5000</span> <span class="mi">243</span><span class="p">.</span><span class="mi">9583</span>
+<span class="mi">1955</span> <span class="mi">261</span><span class="p">.</span><span class="mi">8333</span> <span class="mi">266</span><span class="p">.</span><span class="mi">6667</span> <span class="mi">271</span><span class="p">.</span><span class="mi">1250</span> <span class="mi">275</span><span class="p">.</span><span class="mi">2083</span> <span class="mi">278</span><span class="p">.</span><span class="mi">5000</span> <span class="mi">281</span><span class="p">.</span><span class="mi">9583</span> <span class="mi">285</span><span class="p">.</span><span class="mi">7500</span> <span class="mi">289</span><span class="p">.</span><span class="mi">3333</span>
+<span class="mi">1956</span> <span class="mi">309</span><span class="p">.</span><span class="mi">9583</span> <span class="mi">314</span><span class="p">.</span><span class="mi">4167</span> <span class="mi">318</span><span class="p">.</span><span class="mi">6250</span> <span class="mi">321</span><span class="p">.</span><span class="mi">7500</span> <span class="mi">324</span><span class="p">.</span><span class="mi">5000</span> <span class="mi">327</span><span class="p">.</span><span class="mi">0833</span> <span class="mi">329</span><span class="p">.</span><span class="mi">5417</span> <span class="mi">331</span><span class="p">.</span><span class="mi">8333</span>
+<span class="mi">1957</span> <span class="mi">348</span><span class="p">.</span><span class="mi">2500</span> <span class="mi">353</span><span class="p">.</span><span class="mi">0000</span> <span class="mi">357</span><span class="p">.</span><span class="mi">6250</span> <span class="mi">361</span><span class="p">.</span><span class="mi">3750</span> <span class="mi">364</span><span class="p">.</span><span class="mi">5000</span> <span class="mi">367</span><span class="p">.</span><span class="mi">1667</span> <span class="mi">369</span><span class="p">.</span><span class="mi">4583</span> <span class="mi">371</span><span class="p">.</span><span class="mi">2083</span>
+<span class="mi">1958</span> <span class="mi">375</span><span class="p">.</span><span class="mi">2500</span> <span class="mi">377</span><span class="p">.</span><span class="mi">9167</span> <span class="mi">379</span><span class="p">.</span><span class="mi">5000</span> <span class="mi">380</span><span class="p">.</span><span class="mi">0000</span> <span class="mi">380</span><span class="p">.</span><span class="mi">7083</span> <span class="mi">380</span><span class="p">.</span><span class="mi">9583</span> <span class="mi">381</span><span class="p">.</span><span class="mi">8333</span> <span class="mi">383</span><span class="p">.</span><span class="mi">6667</span>
+<span class="mi">1959</span> <span class="mi">402</span><span class="p">.</span><span class="mi">5417</span> <span class="mi">407</span><span class="p">.</span><span class="mi">1667</span> <span class="mi">411</span><span class="p">.</span><span class="mi">8750</span> <span class="mi">416</span><span class="p">.</span><span class="mi">3333</span> <span class="mi">420</span><span class="p">.</span><span class="mi">5000</span> <span class="mi">425</span><span class="p">.</span><span class="mi">5000</span> <span class="mi">430</span><span class="p">.</span><span class="mi">7083</span> <span class="mi">435</span><span class="p">.</span><span class="mi">1250</span>
+<span class="mi">1960</span> <span class="mi">456</span><span class="p">.</span><span class="mi">3333</span> <span class="mi">461</span><span class="p">.</span><span class="mi">3750</span> <span class="mi">465</span><span class="p">.</span><span class="mi">2083</span> <span class="mi">469</span><span class="p">.</span><span class="mi">3333</span> <span class="mi">472</span><span class="p">.</span><span class="mi">7500</span> <span class="mi">475</span><span class="p">.</span><span class="mi">0417</span>       <span class="n">NA</span>       <span class="n">NA</span>
+          <span class="n">Sep</span>      <span class="n">Oct</span>      <span class="n">Nov</span>      <span class="nb">Dec</span>
+<span class="mi">1949</span> <span class="mi">127</span><span class="p">.</span><span class="mi">9583</span> <span class="mi">128</span><span class="p">.</span><span class="mi">5833</span> <span class="mi">129</span><span class="p">.</span><span class="mi">0000</span> <span class="mi">129</span><span class="p">.</span><span class="mi">7500</span>
+<span class="mi">1950</span> <span class="mi">145</span><span class="p">.</span><span class="mi">7083</span> <span class="mi">148</span><span class="p">.</span><span class="mi">4167</span> <span class="mi">151</span><span class="p">.</span><span class="mi">5417</span> <span class="mi">154</span><span class="p">.</span><span class="mi">7083</span>
+<span class="mi">1951</span> <span class="mi">175</span><span class="p">.</span><span class="mi">4583</span> <span class="mi">176</span><span class="p">.</span><span class="mi">8333</span> <span class="mi">178</span><span class="p">.</span><span class="mi">0417</span> <span class="mi">180</span><span class="p">.</span><span class="mi">1667</span>
+<span class="mi">1952</span> <span class="mi">202</span><span class="p">.</span><span class="mi">2083</span> <span class="mi">206</span><span class="p">.</span><span class="mi">2500</span> <span class="mi">210</span><span class="p">.</span><span class="mi">4167</span> <span class="mi">213</span><span class="p">.</span><span class="mi">3750</span>
+<span class="mi">1953</span> <span class="mi">224</span><span class="p">.</span><span class="mi">9583</span> <span class="mi">224</span><span class="p">.</span><span class="mi">5833</span> <span class="mi">224</span><span class="p">.</span><span class="mi">4583</span> <span class="mi">225</span><span class="p">.</span><span class="mi">5417</span>
+<span class="mi">1954</span> <span class="mi">247</span><span class="p">.</span><span class="mi">1667</span> <span class="mi">250</span><span class="p">.</span><span class="mi">2500</span> <span class="mi">253</span><span class="p">.</span><span class="mi">5000</span> <span class="mi">257</span><span class="p">.</span><span class="mi">1250</span>
+<span class="mi">1955</span> <span class="mi">293</span><span class="p">.</span><span class="mi">2500</span> <span class="mi">297</span><span class="p">.</span><span class="mi">1667</span> <span class="mi">301</span><span class="p">.</span><span class="mi">0000</span> <span class="mi">305</span><span class="p">.</span><span class="mi">4583</span>
+<span class="mi">1956</span> <span class="mi">334</span><span class="p">.</span><span class="mi">4583</span> <span class="mi">337</span><span class="p">.</span><span class="mi">5417</span> <span class="mi">340</span><span class="p">.</span><span class="mi">5417</span> <span class="mi">344</span><span class="p">.</span><span class="mi">0833</span>
+<span class="mi">1957</span> <span class="mi">372</span><span class="p">.</span><span class="mi">1667</span> <span class="mi">372</span><span class="p">.</span><span class="mi">4167</span> <span class="mi">372</span><span class="p">.</span><span class="mi">7500</span> <span class="mi">373</span><span class="p">.</span><span class="mi">6250</span>
+<span class="mi">1958</span> <span class="mi">386</span><span class="p">.</span><span class="mi">5000</span> <span class="mi">390</span><span class="p">.</span><span class="mi">3333</span> <span class="mi">394</span><span class="p">.</span><span class="mi">7083</span> <span class="mi">398</span><span class="p">.</span><span class="mi">6250</span>
+<span class="mi">1959</span> <span class="mi">437</span><span class="p">.</span><span class="mi">7083</span> <span class="mi">440</span><span class="p">.</span><span class="mi">9583</span> <span class="mi">445</span><span class="p">.</span><span class="mi">8333</span> <span class="mi">450</span><span class="p">.</span><span class="mi">6250</span>
+<span class="mi">1960</span>       <span class="n">NA</span>       <span class="n">NA</span>       <span class="n">NA</span>       <span class="n">NA</span>
+
+<span class="err">$</span><span class="n">random</span>
+           <span class="n">Jan</span>       <span class="n">Feb</span>       <span class="n">Mar</span>       <span class="n">Apr</span>       <span class="n">May</span>       <span class="n">Jun</span>       <span class="n">Jul</span>
+<span class="mi">1949</span>        <span class="n">NA</span>        <span class="n">NA</span>        <span class="n">NA</span>        <span class="n">NA</span>        <span class="n">NA</span>        <span class="n">NA</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9516643</span>
+<span class="mi">1950</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9626030</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0714668</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0374474</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0140476</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9269030</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9650406</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9835566</span>
+<span class="mi">1951</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0138446</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0640180</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0918541</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0176651</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0515825</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9460444</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9474041</span>
+<span class="mi">1952</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0258814</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0939696</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0134734</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9695596</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9632673</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0003735</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9468562</span>
+<span class="mi">1953</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9976684</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0151646</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0604644</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0802327</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0413329</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9718056</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9551933</span>
+<span class="mi">1954</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9829785</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9232032</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0044417</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9943899</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0119479</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9978740</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0237753</span>
+<span class="mi">1955</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0154046</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9888241</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9775844</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0015732</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9878755</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0039635</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0385512</span>
+<span class="mi">1956</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0066157</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9970250</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9876248</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9968224</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9985644</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0275560</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0217685</span>
+<span class="mi">1957</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9937293</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9649918</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9881769</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9867637</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9924177</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0328601</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0261250</span>
+<span class="mi">1958</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9954212</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9522762</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9469115</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9383993</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9715785</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0261340</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0483841</span>
+<span class="mi">1959</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9825176</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9505736</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9785278</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9746440</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0177637</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9968613</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0373136</span>
+<span class="mi">1960</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0039279</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9590794</span> <span class="mi">0</span><span class="p">.</span><span class="mi">8940857</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0064948</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0173588</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0120790</span>        <span class="n">NA</span>
+           <span class="n">Aug</span>       <span class="n">Sep</span>       <span class="n">Oct</span>       <span class="n">Nov</span>       <span class="nb">Dec</span>
+<span class="mi">1949</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9534014</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0022198</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0040278</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0062701</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0118119</span>
+<span class="mi">1950</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9733720</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0225047</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9721928</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9389527</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0067914</span>
+<span class="mi">1951</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9397599</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9888637</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9938809</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0235337</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0250824</span>
+<span class="mi">1952</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9931171</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9746302</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0046687</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0202797</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0115407</span>
+<span class="mi">1953</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9894989</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9934337</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0192680</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0009392</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9915039</span>
+<span class="mi">1954</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9845184</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9881036</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9927613</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9995143</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9908692</span>
+<span class="mi">1955</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9831117</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0032501</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0003084</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9827720</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0125535</span>
+<span class="mi">1956</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0004765</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0008730</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9835071</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9932761</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9894251</span>
+<span class="mi">1957</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0312668</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0236147</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0108432</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0212995</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0005263</span>
+<span class="mi">1958</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0789695</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9856540</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9977971</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9802940</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9405687</span>
+<span class="mi">1959</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0531001</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9974447</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0013371</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0134608</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9999192</span>
+<span class="mi">1960</span>        <span class="n">NA</span>        <span class="n">NA</span>        <span class="n">NA</span>        <span class="n">NA</span>        <span class="n">NA</span>
+
+<span class="err">$</span><span class="n">figure</span>
+ <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9102304</span> <span class="mi">0</span><span class="p">.</span><span class="mi">8836253</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0073663</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9759060</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9813780</span> <span class="mi">1</span><span class="p">.</span><span class="mi">1127758</span> <span class="mi">1</span><span class="p">.</span><span class="mi">2265555</span>
+ <span class="p">[</span><span class="mi">8</span><span class="p">]</span> <span class="mi">1</span><span class="p">.</span><span class="mi">2199110</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0604919</span> <span class="mi">0</span><span class="p">.</span><span class="mi">9217572</span> <span class="mi">0</span><span class="p">.</span><span class="mi">8011781</span> <span class="mi">0</span><span class="p">.</span><span class="mi">8988244</span>
+
+<span class="err">$</span><span class="k">type</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ss">&quot;multiplicative&quot;</span>
+
+<span class="n">attr</span><span class="p">(,</span><span class="ss">&quot;class&quot;</span><span class="p">)</span>
+<span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ss">&quot;decomposed.ts&quot;</span>
+</pre></div>
+
+
+<p>We can decompose the time series data using stl() function. The Seasonal Trend Decomposition using Loess (STL) is an algorithm that was developed to help divide up a time series into three components namely: the trend, seasonality and remainder. Now that we have the STL decomposition there is a plot function provided for the object created from a call to stl.</p>
+<div class="highlight"><pre><span></span><span class="nf">stl</span><span class="p">(</span><span class="n">ts_ap</span><span class="p">,</span><span class="n">s.window</span><span class="o">=</span><span class="s">&#39;periodic&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span> <span class="k">Call</span><span class="p">:</span>
+ <span class="n">stl</span><span class="p">(</span><span class="n">x</span> <span class="o">=</span> <span class="n">ts_ap</span><span class="p">,</span> <span class="n">s</span><span class="p">.</span><span class="n">window</span> <span class="o">=</span> <span class="ss">&quot;periodic&quot;</span><span class="p">)</span>
+
+<span class="n">Components</span>
+           <span class="n">seasonal</span>    <span class="n">trend</span>    <span class="n">remainder</span>
+<span class="n">Jan</span> <span class="mi">1949</span> <span class="o">-</span><span class="mi">25</span><span class="p">.</span><span class="mi">497718</span> <span class="mi">127</span><span class="p">.</span><span class="mi">1873</span>  <span class="mi">10</span><span class="p">.</span><span class="mi">31036990</span>
+<span class="n">Feb</span> <span class="mi">1949</span> <span class="o">-</span><span class="mi">35</span><span class="p">.</span><span class="mi">220935</span> <span class="mi">126</span><span class="p">.</span><span class="mi">6495</span>  <span class="mi">26</span><span class="p">.</span><span class="mi">57140282</span>
+<span class="n">Mar</span> <span class="mi">1949</span>  <span class="o">-</span><span class="mi">3</span><span class="p">.</span><span class="mi">027478</span> <span class="mi">126</span><span class="p">.</span><span class="mi">1117</span>   <span class="mi">8</span><span class="p">.</span><span class="mi">91576248</span>
+<span class="n">Apr</span> <span class="mi">1949</span>  <span class="o">-</span><span class="mi">8</span><span class="p">.</span><span class="mi">299054</span> <span class="mi">126</span><span class="p">.</span><span class="mi">1989</span>  <span class="mi">11</span><span class="p">.</span><span class="mi">10012240</span>
+<span class="n">May</span> <span class="mi">1949</span>  <span class="o">-</span><span class="mi">5</span><span class="p">.</span><span class="mi">737289</span> <span class="mi">126</span><span class="p">.</span><span class="mi">2861</span>   <span class="mi">0</span><span class="p">.</span><span class="mi">45114078</span>
+<span class="n">Jun</span> <span class="mi">1949</span>  <span class="mi">32</span><span class="p">.</span><span class="mi">336634</span> <span class="mi">126</span><span class="p">.</span><span class="mi">7330</span> <span class="o">-</span><span class="mi">24</span><span class="p">.</span><span class="mi">06965722</span>
+<span class="n">Jul</span> <span class="mi">1949</span>  <span class="mi">70</span><span class="p">.</span><span class="mi">243882</span> <span class="mi">127</span><span class="p">.</span><span class="mi">1799</span> <span class="o">-</span><span class="mi">49</span><span class="p">.</span><span class="mi">42377968</span>
+<span class="n">Aug</span> <span class="mi">1949</span>  <span class="mi">68</span><span class="p">.</span><span class="mi">049433</span> <span class="mi">127</span><span class="p">.</span><span class="mi">4162</span> <span class="o">-</span><span class="mi">47</span><span class="p">.</span><span class="mi">46564918</span>
+<span class="n">Sep</span> <span class="mi">1949</span>  <span class="mi">17</span><span class="p">.</span><span class="mi">438326</span> <span class="mi">127</span><span class="p">.</span><span class="mi">6525</span>  <span class="o">-</span><span class="mi">9</span><span class="p">.</span><span class="mi">09086079</span>
+<span class="n">Oct</span> <span class="mi">1949</span> <span class="o">-</span><span class="mi">21</span><span class="p">.</span><span class="mi">063432</span> <span class="mi">129</span><span class="p">.</span><span class="mi">0186</span>  <span class="mi">11</span><span class="p">.</span><span class="mi">04484245</span>
+<span class="n">Nov</span> <span class="mi">1949</span> <span class="o">-</span><span class="mi">57</span><span class="p">.</span><span class="mi">481851</span> <span class="mi">130</span><span class="p">.</span><span class="mi">3846</span>  <span class="mi">31</span><span class="p">.</span><span class="mi">09720711</span>
+<span class="nb">Dec</span> <span class="mi">1949</span> <span class="o">-</span><span class="mi">31</span><span class="p">.</span><span class="mi">740516</span> <span class="mi">132</span><span class="p">.</span><span class="mi">3618</span>  <span class="mi">17</span><span class="p">.</span><span class="mi">37867988</span>
+<span class="n">Jan</span> <span class="mi">1950</span> <span class="o">-</span><span class="mi">25</span><span class="p">.</span><span class="mi">497718</span> <span class="mi">134</span><span class="p">.</span><span class="mi">3390</span>   <span class="mi">6</span><span class="p">.</span><span class="mi">15869051</span>
+<span class="n">Feb</span> <span class="mi">1950</span> <span class="o">-</span><span class="mi">35</span><span class="p">.</span><span class="mi">220935</span> <span class="mi">135</span><span class="p">.</span><span class="mi">1084</span>  <span class="mi">26</span><span class="p">.</span><span class="mi">11257707</span>
+<span class="n">Mar</span> <span class="mi">1950</span>  <span class="o">-</span><span class="mi">3</span><span class="p">.</span><span class="mi">027478</span> <span class="mi">135</span><span class="p">.</span><span class="mi">8777</span>   <span class="mi">8</span><span class="p">.</span><span class="mi">14979039</span>
+<span class="n">Apr</span> <span class="mi">1950</span>  <span class="o">-</span><span class="mi">8</span><span class="p">.</span><span class="mi">299054</span> <span class="mi">135</span><span class="p">.</span><span class="mi">9454</span>   <span class="mi">7</span><span class="p">.</span><span class="mi">35364819</span>
+<span class="n">May</span> <span class="mi">1950</span>  <span class="o">-</span><span class="mi">5</span><span class="p">.</span><span class="mi">737289</span> <span class="mi">136</span><span class="p">.</span><span class="mi">0131</span>  <span class="o">-</span><span class="mi">5</span><span class="p">.</span><span class="mi">27583556</span>
+<span class="n">Jun</span> <span class="mi">1950</span>  <span class="mi">32</span><span class="p">.</span><span class="mi">336634</span> <span class="mi">137</span><span class="p">.</span><span class="mi">2093</span> <span class="o">-</span><span class="mi">20</span><span class="p">.</span><span class="mi">54595443</span>
+<span class="n">Jul</span> <span class="mi">1950</span>  <span class="mi">70</span><span class="p">.</span><span class="mi">243882</span> <span class="mi">138</span><span class="p">.</span><span class="mi">4055</span> <span class="o">-</span><span class="mi">38</span><span class="p">.</span><span class="mi">64939776</span>
+<span class="n">Aug</span> <span class="mi">1950</span>  <span class="mi">68</span><span class="p">.</span><span class="mi">049433</span> <span class="mi">141</span><span class="p">.</span><span class="mi">3114</span> <span class="o">-</span><span class="mi">39</span><span class="p">.</span><span class="mi">36083873</span>
+<span class="n">Sep</span> <span class="mi">1950</span>  <span class="mi">17</span><span class="p">.</span><span class="mi">438326</span> <span class="mi">144</span><span class="p">.</span><span class="mi">2173</span>  <span class="o">-</span><span class="mi">3</span><span class="p">.</span><span class="mi">65562181</span>
+<span class="n">Oct</span> <span class="mi">1950</span> <span class="o">-</span><span class="mi">21</span><span class="p">.</span><span class="mi">063432</span> <span class="mi">148</span><span class="p">.</span><span class="mi">3371</span>   <span class="mi">5</span><span class="p">.</span><span class="mi">72636661</span>
+<span class="n">Nov</span> <span class="mi">1950</span> <span class="o">-</span><span class="mi">57</span><span class="p">.</span><span class="mi">481851</span> <span class="mi">152</span><span class="p">.</span><span class="mi">4568</span>  <span class="mi">19</span><span class="p">.</span><span class="mi">02501645</span>
+<span class="nb">Dec</span> <span class="mi">1950</span> <span class="o">-</span><span class="mi">31</span><span class="p">.</span><span class="mi">740516</span> <span class="mi">156</span><span class="p">.</span><span class="mi">1257</span>  <span class="mi">15</span><span class="p">.</span><span class="mi">61485924</span>
+<span class="n">Jan</span> <span class="mi">1951</span> <span class="o">-</span><span class="mi">25</span><span class="p">.</span><span class="mi">497718</span> <span class="mi">159</span><span class="p">.</span><span class="mi">7945</span>  <span class="mi">10</span><span class="p">.</span><span class="mi">70323988</span>
+<span class="n">Feb</span> <span class="mi">1951</span> <span class="o">-</span><span class="mi">35</span><span class="p">.</span><span class="mi">220935</span> <span class="mi">161</span><span class="p">.</span><span class="mi">6914</span>  <span class="mi">23</span><span class="p">.</span><span class="mi">52950035</span>
+<span class="n">Mar</span> <span class="mi">1951</span>  <span class="o">-</span><span class="mi">3</span><span class="p">.</span><span class="mi">027478</span> <span class="mi">163</span><span class="p">.</span><span class="mi">5884</span>  <span class="mi">17</span><span class="p">.</span><span class="mi">43908757</span>
+<span class="n">Apr</span> <span class="mi">1951</span>  <span class="o">-</span><span class="mi">8</span><span class="p">.</span><span class="mi">299054</span> <span class="mi">164</span><span class="p">.</span><span class="mi">6017</span>   <span class="mi">6</span><span class="p">.</span><span class="mi">69738099</span>
+<span class="n">May</span> <span class="mi">1951</span>  <span class="o">-</span><span class="mi">5</span><span class="p">.</span><span class="mi">737289</span> <span class="mi">165</span><span class="p">.</span><span class="mi">6150</span>  <span class="mi">12</span><span class="p">.</span><span class="mi">12233287</span>
+<span class="n">Jun</span> <span class="mi">1951</span>  <span class="mi">32</span><span class="p">.</span><span class="mi">336634</span> <span class="mi">167</span><span class="p">.</span><span class="mi">2285</span> <span class="o">-</span><span class="mi">21</span><span class="p">.</span><span class="mi">56509136</span>
+<span class="n">Jul</span> <span class="mi">1951</span>  <span class="mi">70</span><span class="p">.</span><span class="mi">243882</span> <span class="mi">168</span><span class="p">.</span><span class="mi">8420</span> <span class="o">-</span><span class="mi">40</span><span class="p">.</span><span class="mi">08584006</span>
+<span class="n">Aug</span> <span class="mi">1951</span>  <span class="mi">68</span><span class="p">.</span><span class="mi">049433</span> <span class="mi">171</span><span class="p">.</span><span class="mi">2070</span> <span class="o">-</span><span class="mi">40</span><span class="p">.</span><span class="mi">25645599</span>
+<span class="n">Sep</span> <span class="mi">1951</span>  <span class="mi">17</span><span class="p">.</span><span class="mi">438326</span> <span class="mi">173</span><span class="p">.</span><span class="mi">5721</span>  <span class="o">-</span><span class="mi">7</span><span class="p">.</span><span class="mi">01041404</span>
+<span class="n">Oct</span> <span class="mi">1951</span> <span class="o">-</span><span class="mi">21</span><span class="p">.</span><span class="mi">063432</span> <span class="mi">176</span><span class="p">.</span><span class="mi">5526</span>   <span class="mi">6</span><span class="p">.</span><span class="mi">51079382</span>
+<span class="n">Nov</span> <span class="mi">1951</span> <span class="o">-</span><span class="mi">57</span><span class="p">.</span><span class="mi">481851</span> <span class="mi">179</span><span class="p">.</span><span class="mi">5332</span>  <span class="mi">23</span><span class="p">.</span><span class="mi">94866309</span>
+<span class="nb">Dec</span> <span class="mi">1951</span> <span class="o">-</span><span class="mi">31</span><span class="p">.</span><span class="mi">740516</span> <span class="mi">182</span><span class="p">.</span><span class="mi">6278</span>  <span class="mi">15</span><span class="p">.</span><span class="mi">11274939</span>
+<span class="n">Jan</span> <span class="mi">1952</span> <span class="o">-</span><span class="mi">25</span><span class="p">.</span><span class="mi">497718</span> <span class="mi">185</span><span class="p">.</span><span class="mi">7223</span>  <span class="mi">10</span><span class="p">.</span><span class="mi">77537354</span>
+<span class="n">Feb</span> <span class="mi">1952</span> <span class="o">-</span><span class="mi">35</span><span class="p">.</span><span class="mi">220935</span> <span class="mi">187</span><span class="p">.</span><span class="mi">8163</span>  <span class="mi">27</span><span class="p">.</span><span class="mi">40461728</span>
+<span class="n">Mar</span> <span class="mi">1952</span>  <span class="o">-</span><span class="mi">3</span><span class="p">.</span><span class="mi">027478</span> <span class="mi">189</span><span class="p">.</span><span class="mi">9103</span>   <span class="mi">6</span><span class="p">.</span><span class="mi">11718778</span>
+<span class="n">Apr</span> <span class="mi">1952</span>  <span class="o">-</span><span class="mi">8</span><span class="p">.</span><span class="mi">299054</span> <span class="mi">191</span><span class="p">.</span><span class="mi">1312</span>  <span class="o">-</span><span class="mi">1</span><span class="p">.</span><span class="mi">83211324</span>
+<span class="n">May</span> <span class="mi">1952</span>  <span class="o">-</span><span class="mi">5</span><span class="p">.</span><span class="mi">737289</span> <span class="mi">192</span><span class="p">.</span><span class="mi">3520</span>  <span class="o">-</span><span class="mi">3</span><span class="p">.</span><span class="mi">61475580</span>
+<span class="n">Jun</span> <span class="mi">1952</span>  <span class="mi">32</span><span class="p">.</span><span class="mi">336634</span> <span class="mi">194</span><span class="p">.</span><span class="mi">0658</span>  <span class="o">-</span><span class="mi">8</span><span class="p">.</span><span class="mi">40245074</span>
+<span class="n">Jul</span> <span class="mi">1952</span>  <span class="mi">70</span><span class="p">.</span><span class="mi">243882</span> <span class="mi">195</span><span class="p">.</span><span class="mi">7796</span> <span class="o">-</span><span class="mi">36</span><span class="p">.</span><span class="mi">02347015</span>
+<span class="n">Aug</span> <span class="mi">1952</span>  <span class="mi">68</span><span class="p">.</span><span class="mi">049433</span> <span class="mi">198</span><span class="p">.</span><span class="mi">7814</span> <span class="o">-</span><span class="mi">24</span><span class="p">.</span><span class="mi">83081992</span>
+<span class="n">Sep</span> <span class="mi">1952</span>  <span class="mi">17</span><span class="p">.</span><span class="mi">438326</span> <span class="mi">201</span><span class="p">.</span><span class="mi">7832</span> <span class="o">-</span><span class="mi">10</span><span class="p">.</span><span class="mi">22151180</span>
+<span class="n">Oct</span> <span class="mi">1952</span> <span class="o">-</span><span class="mi">21</span><span class="p">.</span><span class="mi">063432</span> <span class="mi">206</span><span class="p">.</span><span class="mi">0687</span>   <span class="mi">5</span><span class="p">.</span><span class="mi">99474323</span>
+<span class="n">Nov</span> <span class="mi">1952</span> <span class="o">-</span><span class="mi">57</span><span class="p">.</span><span class="mi">481851</span> <span class="mi">210</span><span class="p">.</span><span class="mi">3542</span>  <span class="mi">19</span><span class="p">.</span><span class="mi">12765967</span>
+<span class="nb">Dec</span> <span class="mi">1952</span> <span class="o">-</span><span class="mi">31</span><span class="p">.</span><span class="mi">740516</span> <span class="mi">214</span><span class="p">.</span><span class="mi">1849</span>  <span class="mi">11</span><span class="p">.</span><span class="mi">55563782</span>
+<span class="n">Jan</span> <span class="mi">1953</span> <span class="o">-</span><span class="mi">25</span><span class="p">.</span><span class="mi">497718</span> <span class="mi">218</span><span class="p">.</span><span class="mi">0156</span>   <span class="mi">3</span><span class="p">.</span><span class="mi">48215382</span>
+<span class="n">Feb</span> <span class="mi">1953</span> <span class="o">-</span><span class="mi">35</span><span class="p">.</span><span class="mi">220935</span> <span class="mi">220</span><span class="p">.</span><span class="mi">1263</span>  <span class="mi">11</span><span class="p">.</span><span class="mi">09459538</span>
+<span class="n">Mar</span> <span class="mi">1953</span>  <span class="o">-</span><span class="mi">3</span><span class="p">.</span><span class="mi">027478</span> <span class="mi">222</span><span class="p">.</span><span class="mi">2371</span>  <span class="mi">16</span><span class="p">.</span><span class="mi">79036369</span>
+<span class="n">Apr</span> <span class="mi">1953</span>  <span class="o">-</span><span class="mi">8</span><span class="p">.</span><span class="mi">299054</span> <span class="mi">222</span><span class="p">.</span><span class="mi">9376</span>  <span class="mi">20</span><span class="p">.</span><span class="mi">36148810</span>
+<span class="n">May</span> <span class="mi">1953</span>  <span class="o">-</span><span class="mi">5</span><span class="p">.</span><span class="mi">737289</span> <span class="mi">223</span><span class="p">.</span><span class="mi">6380</span>  <span class="mi">11</span><span class="p">.</span><span class="mi">09927096</span>
+<span class="n">Jun</span> <span class="mi">1953</span>  <span class="mi">32</span><span class="p">.</span><span class="mi">336634</span> <span class="mi">223</span><span class="p">.</span><span class="mi">7928</span> <span class="o">-</span><span class="mi">13</span><span class="p">.</span><span class="mi">12945404</span>
+<span class="n">Jul</span> <span class="mi">1953</span>  <span class="mi">70</span><span class="p">.</span><span class="mi">243882</span> <span class="mi">223</span><span class="p">.</span><span class="mi">9476</span> <span class="o">-</span><span class="mi">30</span><span class="p">.</span><span class="mi">19150350</span>
+<span class="n">Aug</span> <span class="mi">1953</span>  <span class="mi">68</span><span class="p">.</span><span class="mi">049433</span> <span class="mi">223</span><span class="p">.</span><span class="mi">9443</span> <span class="o">-</span><span class="mi">19</span><span class="p">.</span><span class="mi">99370772</span>
+<span class="n">Sep</span> <span class="mi">1953</span>  <span class="mi">17</span><span class="p">.</span><span class="mi">438326</span> <span class="mi">223</span><span class="p">.</span><span class="mi">9409</span>  <span class="o">-</span><span class="mi">4</span><span class="p">.</span><span class="mi">37925407</span>
+<span class="n">Oct</span> <span class="mi">1953</span> <span class="o">-</span><span class="mi">21</span><span class="p">.</span><span class="mi">063432</span> <span class="mi">224</span><span class="p">.</span><span class="mi">5947</span>   <span class="mi">7</span><span class="p">.</span><span class="mi">46868162</span>
+<span class="n">Nov</span> <span class="mi">1953</span> <span class="o">-</span><span class="mi">57</span><span class="p">.</span><span class="mi">481851</span> <span class="mi">225</span><span class="p">.</span><span class="mi">2486</span>  <span class="mi">12</span><span class="p">.</span><span class="mi">23327872</span>
+<span class="nb">Dec</span> <span class="mi">1953</span> <span class="o">-</span><span class="mi">31</span><span class="p">.</span><span class="mi">740516</span> <span class="mi">227</span><span class="p">.</span><span class="mi">0215</span>   <span class="mi">5</span><span class="p">.</span><span class="mi">71901399</span>
+<span class="n">Jan</span> <span class="mi">1954</span> <span class="o">-</span><span class="mi">25</span><span class="p">.</span><span class="mi">497718</span> <span class="mi">228</span><span class="p">.</span><span class="mi">7944</span>   <span class="mi">0</span><span class="p">.</span><span class="mi">70328710</span>
+<span class="n">Feb</span> <span class="mi">1954</span> <span class="o">-</span><span class="mi">35</span><span class="p">.</span><span class="mi">220935</span> <span class="mi">230</span><span class="p">.</span><span class="mi">5535</span>  <span class="o">-</span><span class="mi">7</span><span class="p">.</span><span class="mi">33257110</span>
+<span class="n">Mar</span> <span class="mi">1954</span>  <span class="o">-</span><span class="mi">3</span><span class="p">.</span><span class="mi">027478</span> <span class="mi">232</span><span class="p">.</span><span class="mi">3126</span>   <span class="mi">5</span><span class="p">.</span><span class="mi">71489744</span>
+<span class="n">Apr</span> <span class="mi">1954</span>  <span class="o">-</span><span class="mi">8</span><span class="p">.</span><span class="mi">299054</span> <span class="mi">233</span><span class="p">.</span><span class="mi">8328</span>   <span class="mi">1</span><span class="p">.</span><span class="mi">46622217</span>
+<span class="n">May</span> <span class="mi">1954</span>  <span class="o">-</span><span class="mi">5</span><span class="p">.</span><span class="mi">737289</span> <span class="mi">235</span><span class="p">.</span><span class="mi">3531</span>   <span class="mi">4</span><span class="p">.</span><span class="mi">38420535</span>
+<span class="n">Jun</span> <span class="mi">1954</span>  <span class="mi">32</span><span class="p">.</span><span class="mi">336634</span> <span class="mi">237</span><span class="p">.</span><span class="mi">7041</span>  <span class="o">-</span><span class="mi">6</span><span class="p">.</span><span class="mi">04073406</span>
+<span class="n">Jul</span> <span class="mi">1954</span>  <span class="mi">70</span><span class="p">.</span><span class="mi">243882</span> <span class="mi">240</span><span class="p">.</span><span class="mi">0551</span>  <span class="o">-</span><span class="mi">8</span><span class="p">.</span><span class="mi">29899793</span>
+<span class="n">Aug</span> <span class="mi">1954</span>  <span class="mi">68</span><span class="p">.</span><span class="mi">049433</span> <span class="mi">243</span><span class="p">.</span><span class="mi">2465</span> <span class="o">-</span><span class="mi">18</span><span class="p">.</span><span class="mi">29598169</span>
+<span class="n">Sep</span> <span class="mi">1954</span>  <span class="mi">17</span><span class="p">.</span><span class="mi">438326</span> <span class="mi">246</span><span class="p">.</span><span class="mi">4380</span>  <span class="o">-</span><span class="mi">4</span><span class="p">.</span><span class="mi">87630758</span>
+<span class="n">Oct</span> <span class="mi">1954</span> <span class="o">-</span><span class="mi">21</span><span class="p">.</span><span class="mi">063432</span> <span class="mi">250</span><span class="p">.</span><span class="mi">1037</span>  <span class="o">-</span><span class="mi">0</span><span class="p">.</span><span class="mi">04022517</span>
+<span class="n">Nov</span> <span class="mi">1954</span> <span class="o">-</span><span class="mi">57</span><span class="p">.</span><span class="mi">481851</span> <span class="mi">253</span><span class="p">.</span><span class="mi">7693</span>   <span class="mi">6</span><span class="p">.</span><span class="mi">71251865</span>
+<span class="nb">Dec</span> <span class="mi">1954</span> <span class="o">-</span><span class="mi">31</span><span class="p">.</span><span class="mi">740516</span> <span class="mi">258</span><span class="p">.</span><span class="mi">0836</span>   <span class="mi">2</span><span class="p">.</span><span class="mi">65690861</span>
+<span class="n">Jan</span> <span class="mi">1955</span> <span class="o">-</span><span class="mi">25</span><span class="p">.</span><span class="mi">497718</span> <span class="mi">262</span><span class="p">.</span><span class="mi">3979</span>   <span class="mi">5</span><span class="p">.</span><span class="mi">09983643</span>
+<span class="n">Feb</span> <span class="mi">1955</span> <span class="o">-</span><span class="mi">35</span><span class="p">.</span><span class="mi">220935</span> <span class="mi">266</span><span class="p">.</span><span class="mi">7545</span>   <span class="mi">1</span><span class="p">.</span><span class="mi">46642081</span>
+<span class="n">Mar</span> <span class="mi">1955</span>  <span class="o">-</span><span class="mi">3</span><span class="p">.</span><span class="mi">027478</span> <span class="mi">271</span><span class="p">.</span><span class="mi">1111</span>  <span class="o">-</span><span class="mi">1</span><span class="p">.</span><span class="mi">08366806</span>
+<span class="n">Apr</span> <span class="mi">1955</span>  <span class="o">-</span><span class="mi">8</span><span class="p">.</span><span class="mi">299054</span> <span class="mi">274</span><span class="p">.</span><span class="mi">8384</span>   <span class="mi">2</span><span class="p">.</span><span class="mi">46064436</span>
+<span class="n">May</span> <span class="mi">1955</span>  <span class="o">-</span><span class="mi">5</span><span class="p">.</span><span class="mi">737289</span> <span class="mi">278</span><span class="p">.</span><span class="mi">5657</span>  <span class="o">-</span><span class="mi">2</span><span class="p">.</span><span class="mi">82838476</span>
+<span class="n">Jun</span> <span class="mi">1955</span>  <span class="mi">32</span><span class="p">.</span><span class="mi">336634</span> <span class="mi">282</span><span class="p">.</span><span class="mi">0862</span>   <span class="mi">0</span><span class="p">.</span><span class="mi">57720167</span>
+<span class="n">Jul</span> <span class="mi">1955</span>  <span class="mi">70</span><span class="p">.</span><span class="mi">243882</span> <span class="mi">285</span><span class="p">.</span><span class="mi">6067</span>   <span class="mi">8</span><span class="p">.</span><span class="mi">14946363</span>
+<span class="n">Aug</span> <span class="mi">1955</span>  <span class="mi">68</span><span class="p">.</span><span class="mi">049433</span> <span class="mi">289</span><span class="p">.</span><span class="mi">3515</span> <span class="o">-</span><span class="mi">10</span><span class="p">.</span><span class="mi">40093208</span>
+<span class="n">Sep</span> <span class="mi">1955</span>  <span class="mi">17</span><span class="p">.</span><span class="mi">438326</span> <span class="mi">293</span><span class="p">.</span><span class="mi">0963</span>   <span class="mi">1</span><span class="p">.</span><span class="mi">46533009</span>
+<span class="n">Oct</span> <span class="mi">1955</span> <span class="o">-</span><span class="mi">21</span><span class="p">.</span><span class="mi">063432</span> <span class="mi">297</span><span class="p">.</span><span class="mi">0760</span>  <span class="o">-</span><span class="mi">2</span><span class="p">.</span><span class="mi">01260749</span>
+<span class="n">Nov</span> <span class="mi">1955</span> <span class="o">-</span><span class="mi">57</span><span class="p">.</span><span class="mi">481851</span> <span class="mi">301</span><span class="p">.</span><span class="mi">0557</span>  <span class="o">-</span><span class="mi">6</span><span class="p">.</span><span class="mi">57388365</span>
+<span class="nb">Dec</span> <span class="mi">1955</span> <span class="o">-</span><span class="mi">31</span><span class="p">.</span><span class="mi">740516</span> <span class="mi">305</span><span class="p">.</span><span class="mi">4064</span>   <span class="mi">4</span><span class="p">.</span><span class="mi">33415306</span>
+<span class="n">Jan</span> <span class="mi">1956</span> <span class="o">-</span><span class="mi">25</span><span class="p">.</span><span class="mi">497718</span> <span class="mi">309</span><span class="p">.</span><span class="mi">7570</span>  <span class="o">-</span><span class="mi">0</span><span class="p">.</span><span class="mi">25927237</span>
+<span class="n">Feb</span> <span class="mi">1956</span> <span class="o">-</span><span class="mi">35</span><span class="p">.</span><span class="mi">220935</span> <span class="mi">314</span><span class="p">.</span><span class="mi">0295</span>  <span class="o">-</span><span class="mi">1</span><span class="p">.</span><span class="mi">80854607</span>
+<span class="n">Mar</span> <span class="mi">1956</span>  <span class="o">-</span><span class="mi">3</span><span class="p">.</span><span class="mi">027478</span> <span class="mi">318</span><span class="p">.</span><span class="mi">3020</span>   <span class="mi">1</span><span class="p">.</span><span class="mi">72550697</span>
+<span class="n">Apr</span> <span class="mi">1956</span>  <span class="o">-</span><span class="mi">8</span><span class="p">.</span><span class="mi">299054</span> <span class="mi">321</span><span class="p">.</span><span class="mi">7071</span>  <span class="o">-</span><span class="mi">0</span><span class="p">.</span><span class="mi">40801520</span>
+<span class="n">May</span> <span class="mi">1956</span>  <span class="o">-</span><span class="mi">5</span><span class="p">.</span><span class="mi">737289</span> <span class="mi">325</span><span class="p">.</span><span class="mi">1122</span>  <span class="o">-</span><span class="mi">1</span><span class="p">.</span><span class="mi">37487891</span>
+<span class="n">Jun</span> <span class="mi">1956</span>  <span class="mi">32</span><span class="p">.</span><span class="mi">336634</span> <span class="mi">327</span><span class="p">.</span><span class="mi">6514</span>  <span class="mi">14</span><span class="p">.</span><span class="mi">01197715</span>
+<span class="n">Jul</span> <span class="mi">1956</span>  <span class="mi">70</span><span class="p">.</span><span class="mi">243882</span> <span class="mi">330</span><span class="p">.</span><span class="mi">1906</span>  <span class="mi">12</span><span class="p">.</span><span class="mi">56550875</span>
+<span class="n">Aug</span> <span class="mi">1956</span>  <span class="mi">68</span><span class="p">.</span><span class="mi">049433</span> <span class="mi">332</span><span class="p">.</span><span class="mi">4831</span>   <span class="mi">4</span><span class="p">.</span><span class="mi">46746283</span>
+<span class="n">Sep</span> <span class="mi">1956</span>  <span class="mi">17</span><span class="p">.</span><span class="mi">438326</span> <span class="mi">334</span><span class="p">.</span><span class="mi">7756</span>   <span class="mi">2</span><span class="p">.</span><span class="mi">78607479</span>
+<span class="n">Oct</span> <span class="mi">1956</span> <span class="o">-</span><span class="mi">21</span><span class="p">.</span><span class="mi">063432</span> <span class="mi">337</span><span class="p">.</span><span class="mi">3493</span> <span class="o">-</span><span class="mi">10</span><span class="p">.</span><span class="mi">28586362</span>
+<span class="n">Nov</span> <span class="mi">1956</span> <span class="o">-</span><span class="mi">57</span><span class="p">.</span><span class="mi">481851</span> <span class="mi">339</span><span class="p">.</span><span class="mi">9230</span> <span class="o">-</span><span class="mi">11</span><span class="p">.</span><span class="mi">44114062</span>
+<span class="nb">Dec</span> <span class="mi">1956</span> <span class="o">-</span><span class="mi">31</span><span class="p">.</span><span class="mi">740516</span> <span class="mi">343</span><span class="p">.</span><span class="mi">5618</span>  <span class="o">-</span><span class="mi">5</span><span class="p">.</span><span class="mi">82125409</span>
+<span class="n">Jan</span> <span class="mi">1957</span> <span class="o">-</span><span class="mi">25</span><span class="p">.</span><span class="mi">497718</span> <span class="mi">347</span><span class="p">.</span><span class="mi">2005</span>  <span class="o">-</span><span class="mi">6</span><span class="p">.</span><span class="mi">70282970</span>
+<span class="n">Feb</span> <span class="mi">1957</span> <span class="o">-</span><span class="mi">35</span><span class="p">.</span><span class="mi">220935</span> <span class="mi">351</span><span class="p">.</span><span class="mi">9113</span> <span class="o">-</span><span class="mi">15</span><span class="p">.</span><span class="mi">69035040</span>
+<span class="n">Mar</span> <span class="mi">1957</span>  <span class="o">-</span><span class="mi">3</span><span class="p">.</span><span class="mi">027478</span> <span class="mi">356</span><span class="p">.</span><span class="mi">6220</span>   <span class="mi">2</span><span class="p">.</span><span class="mi">40545565</span>
+<span class="n">Apr</span> <span class="mi">1957</span>  <span class="o">-</span><span class="mi">8</span><span class="p">.</span><span class="mi">299054</span> <span class="mi">360</span><span class="p">.</span><span class="mi">9900</span>  <span class="o">-</span><span class="mi">4</span><span class="p">.</span><span class="mi">69097044</span>
+<span class="n">May</span> <span class="mi">1957</span>  <span class="o">-</span><span class="mi">5</span><span class="p">.</span><span class="mi">737289</span> <span class="mi">365</span><span class="p">.</span><span class="mi">3580</span>  <span class="o">-</span><span class="mi">4</span><span class="p">.</span><span class="mi">62073808</span>
+<span class="n">Jun</span> <span class="mi">1957</span>  <span class="mi">32</span><span class="p">.</span><span class="mi">336634</span> <span class="mi">368</span><span class="p">.</span><span class="mi">2253</span>  <span class="mi">21</span><span class="p">.</span><span class="mi">43804701</span>
+<span class="n">Jul</span> <span class="mi">1957</span>  <span class="mi">70</span><span class="p">.</span><span class="mi">243882</span> <span class="mi">371</span><span class="p">.</span><span class="mi">0926</span>  <span class="mi">23</span><span class="p">.</span><span class="mi">66350763</span>
+<span class="n">Aug</span> <span class="mi">1957</span>  <span class="mi">68</span><span class="p">.</span><span class="mi">049433</span> <span class="mi">372</span><span class="p">.</span><span class="mi">2017</span>  <span class="mi">26</span><span class="p">.</span><span class="mi">74885447</span>
+<span class="n">Sep</span> <span class="mi">1957</span>  <span class="mi">17</span><span class="p">.</span><span class="mi">438326</span> <span class="mi">373</span><span class="p">.</span><span class="mi">3108</span>  <span class="mi">13</span><span class="p">.</span><span class="mi">25085918</span>
+<span class="n">Oct</span> <span class="mi">1957</span> <span class="o">-</span><span class="mi">21</span><span class="p">.</span><span class="mi">063432</span> <span class="mi">373</span><span class="p">.</span><span class="mi">0689</span>  <span class="o">-</span><span class="mi">5</span><span class="p">.</span><span class="mi">00549738</span>
+<span class="n">Nov</span> <span class="mi">1957</span> <span class="o">-</span><span class="mi">57</span><span class="p">.</span><span class="mi">481851</span> <span class="mi">372</span><span class="p">.</span><span class="mi">8270</span> <span class="o">-</span><span class="mi">10</span><span class="p">.</span><span class="mi">34519253</span>
+<span class="nb">Dec</span> <span class="mi">1957</span> <span class="o">-</span><span class="mi">31</span><span class="p">.</span><span class="mi">740516</span> <span class="mi">373</span><span class="p">.</span><span class="mi">1663</span>  <span class="o">-</span><span class="mi">5</span><span class="p">.</span><span class="mi">42583158</span>
+<span class="n">Jan</span> <span class="mi">1958</span> <span class="o">-</span><span class="mi">25</span><span class="p">.</span><span class="mi">497718</span> <span class="mi">373</span><span class="p">.</span><span class="mi">5057</span>  <span class="o">-</span><span class="mi">8</span><span class="p">.</span><span class="mi">00793278</span>
+<span class="n">Feb</span> <span class="mi">1958</span> <span class="o">-</span><span class="mi">35</span><span class="p">.</span><span class="mi">220935</span> <span class="mi">375</span><span class="p">.</span><span class="mi">3037</span> <span class="o">-</span><span class="mi">22</span><span class="p">.</span><span class="mi">08276520</span>
+<span class="n">Mar</span> <span class="mi">1958</span>  <span class="o">-</span><span class="mi">3</span><span class="p">.</span><span class="mi">027478</span> <span class="mi">377</span><span class="p">.</span><span class="mi">1017</span> <span class="o">-</span><span class="mi">12</span><span class="p">.</span><span class="mi">07427088</span>
+<span class="n">Apr</span> <span class="mi">1958</span>  <span class="o">-</span><span class="mi">8</span><span class="p">.</span><span class="mi">299054</span> <span class="mi">379</span><span class="p">.</span><span class="mi">1766</span> <span class="o">-</span><span class="mi">22</span><span class="p">.</span><span class="mi">87753414</span>
+<span class="n">May</span> <span class="mi">1958</span>  <span class="o">-</span><span class="mi">5</span><span class="p">.</span><span class="mi">737289</span> <span class="mi">381</span><span class="p">.</span><span class="mi">2514</span> <span class="o">-</span><span class="mi">12</span><span class="p">.</span><span class="mi">51413896</span>
+<span class="n">Jun</span> <span class="mi">1958</span>  <span class="mi">32</span><span class="p">.</span><span class="mi">336634</span> <span class="mi">382</span><span class="p">.</span><span class="mi">8734</span>  <span class="mi">19</span><span class="p">.</span><span class="mi">78995191</span>
+<span class="n">Jul</span> <span class="mi">1958</span>  <span class="mi">70</span><span class="p">.</span><span class="mi">243882</span> <span class="mi">384</span><span class="p">.</span><span class="mi">4954</span>  <span class="mi">36</span><span class="p">.</span><span class="mi">26071831</span>
+<span class="n">Aug</span> <span class="mi">1958</span>  <span class="mi">68</span><span class="p">.</span><span class="mi">049433</span> <span class="mi">386</span><span class="p">.</span><span class="mi">4129</span>  <span class="mi">50</span><span class="p">.</span><span class="mi">53766559</span>
+<span class="n">Sep</span> <span class="mi">1958</span>  <span class="mi">17</span><span class="p">.</span><span class="mi">438326</span> <span class="mi">388</span><span class="p">.</span><span class="mi">3304</span>  <span class="o">-</span><span class="mi">1</span><span class="p">.</span><span class="mi">76872925</span>
+<span class="n">Oct</span> <span class="mi">1958</span> <span class="o">-</span><span class="mi">21</span><span class="p">.</span><span class="mi">063432</span> <span class="mi">390</span><span class="p">.</span><span class="mi">6746</span> <span class="o">-</span><span class="mi">10</span><span class="p">.</span><span class="mi">61113352</span>
+<span class="n">Nov</span> <span class="mi">1958</span> <span class="o">-</span><span class="mi">57</span><span class="p">.</span><span class="mi">481851</span> <span class="mi">393</span><span class="p">.</span><span class="mi">0187</span> <span class="o">-</span><span class="mi">25</span><span class="p">.</span><span class="mi">53687639</span>
+<span class="nb">Dec</span> <span class="mi">1958</span> <span class="o">-</span><span class="mi">31</span><span class="p">.</span><span class="mi">740516</span> <span class="mi">396</span><span class="p">.</span><span class="mi">3416</span> <span class="o">-</span><span class="mi">27</span><span class="p">.</span><span class="mi">60108633</span>
+<span class="n">Jan</span> <span class="mi">1959</span> <span class="o">-</span><span class="mi">25</span><span class="p">.</span><span class="mi">497718</span> <span class="mi">399</span><span class="p">.</span><span class="mi">6645</span> <span class="o">-</span><span class="mi">14</span><span class="p">.</span><span class="mi">16675842</span>
+<span class="n">Feb</span> <span class="mi">1959</span> <span class="o">-</span><span class="mi">35</span><span class="p">.</span><span class="mi">220935</span> <span class="mi">404</span><span class="p">.</span><span class="mi">9035</span> <span class="o">-</span><span class="mi">27</span><span class="p">.</span><span class="mi">68255170</span>
+<span class="n">Mar</span> <span class="mi">1959</span>  <span class="o">-</span><span class="mi">3</span><span class="p">.</span><span class="mi">027478</span> <span class="mi">410</span><span class="p">.</span><span class="mi">1425</span>  <span class="o">-</span><span class="mi">1</span><span class="p">.</span><span class="mi">11501823</span>
+<span class="n">Apr</span> <span class="mi">1959</span>  <span class="o">-</span><span class="mi">8</span><span class="p">.</span><span class="mi">299054</span> <span class="mi">416</span><span class="p">.</span><span class="mi">3450</span> <span class="o">-</span><span class="mi">12</span><span class="p">.</span><span class="mi">04590874</span>
+<span class="n">May</span> <span class="mi">1959</span>  <span class="o">-</span><span class="mi">5</span><span class="p">.</span><span class="mi">737289</span> <span class="mi">422</span><span class="p">.</span><span class="mi">5474</span>   <span class="mi">3</span><span class="p">.</span><span class="mi">18985921</span>
+<span class="n">Jun</span> <span class="mi">1959</span>  <span class="mi">32</span><span class="p">.</span><span class="mi">336634</span> <span class="mi">427</span><span class="p">.</span><span class="mi">7897</span>  <span class="mi">11</span><span class="p">.</span><span class="mi">87371232</span>
+<span class="n">Jul</span> <span class="mi">1959</span>  <span class="mi">70</span><span class="p">.</span><span class="mi">243882</span> <span class="mi">433</span><span class="p">.</span><span class="mi">0319</span>  <span class="mi">44</span><span class="p">.</span><span class="mi">72424096</span>
+<span class="n">Aug</span> <span class="mi">1959</span>  <span class="mi">68</span><span class="p">.</span><span class="mi">049433</span> <span class="mi">436</span><span class="p">.</span><span class="mi">4362</span>  <span class="mi">54</span><span class="p">.</span><span class="mi">51433014</span>
+<span class="n">Sep</span> <span class="mi">1959</span>  <span class="mi">17</span><span class="p">.</span><span class="mi">438326</span> <span class="mi">439</span><span class="p">.</span><span class="mi">8406</span>   <span class="mi">5</span><span class="p">.</span><span class="mi">72107719</span>
+<span class="n">Oct</span> <span class="mi">1959</span> <span class="o">-</span><span class="mi">21</span><span class="p">.</span><span class="mi">063432</span> <span class="mi">442</span><span class="p">.</span><span class="mi">3755</span> <span class="o">-</span><span class="mi">14</span><span class="p">.</span><span class="mi">31206868</span>
+<span class="n">Nov</span> <span class="mi">1959</span> <span class="o">-</span><span class="mi">57</span><span class="p">.</span><span class="mi">481851</span> <span class="mi">444</span><span class="p">.</span><span class="mi">9104</span> <span class="o">-</span><span class="mi">25</span><span class="p">.</span><span class="mi">42855315</span>
+<span class="nb">Dec</span> <span class="mi">1959</span> <span class="o">-</span><span class="mi">31</span><span class="p">.</span><span class="mi">740516</span> <span class="mi">448</span><span class="p">.</span><span class="mi">6402</span> <span class="o">-</span><span class="mi">11</span><span class="p">.</span><span class="mi">89966612</span>
+<span class="n">Jan</span> <span class="mi">1960</span> <span class="o">-</span><span class="mi">25</span><span class="p">.</span><span class="mi">497718</span> <span class="mi">452</span><span class="p">.</span><span class="mi">3700</span>  <span class="o">-</span><span class="mi">9</span><span class="p">.</span><span class="mi">87224124</span>
+<span class="n">Feb</span> <span class="mi">1960</span> <span class="o">-</span><span class="mi">35</span><span class="p">.</span><span class="mi">220935</span> <span class="mi">457</span><span class="p">.</span><span class="mi">8121</span> <span class="o">-</span><span class="mi">31</span><span class="p">.</span><span class="mi">59119510</span>
+<span class="n">Mar</span> <span class="mi">1960</span>  <span class="o">-</span><span class="mi">3</span><span class="p">.</span><span class="mi">027478</span> <span class="mi">463</span><span class="p">.</span><span class="mi">2543</span> <span class="o">-</span><span class="mi">41</span><span class="p">.</span><span class="mi">22682221</span>
+<span class="n">Apr</span> <span class="mi">1960</span>  <span class="o">-</span><span class="mi">8</span><span class="p">.</span><span class="mi">299054</span> <span class="mi">467</span><span class="p">.</span><span class="mi">6104</span>   <span class="mi">1</span><span class="p">.</span><span class="mi">68863111</span>
+<span class="n">May</span> <span class="mi">1960</span>  <span class="o">-</span><span class="mi">5</span><span class="p">.</span><span class="mi">737289</span> <span class="mi">471</span><span class="p">.</span><span class="mi">9665</span>   <span class="mi">5</span><span class="p">.</span><span class="mi">77074288</span>
+<span class="n">Jun</span> <span class="mi">1960</span>  <span class="mi">32</span><span class="p">.</span><span class="mi">336634</span> <span class="mi">475</span><span class="p">.</span><span class="mi">6083</span>  <span class="mi">27</span><span class="p">.</span><span class="mi">05506691</span>
+<span class="n">Jul</span> <span class="mi">1960</span>  <span class="mi">70</span><span class="p">.</span><span class="mi">243882</span> <span class="mi">479</span><span class="p">.</span><span class="mi">2501</span>  <span class="mi">72</span><span class="p">.</span><span class="mi">50606647</span>
+<span class="n">Aug</span> <span class="mi">1960</span>  <span class="mi">68</span><span class="p">.</span><span class="mi">049433</span> <span class="mi">483</span><span class="p">.</span><span class="mi">1894</span>  <span class="mi">54</span><span class="p">.</span><span class="mi">76116520</span>
+<span class="n">Sep</span> <span class="mi">1960</span>  <span class="mi">17</span><span class="p">.</span><span class="mi">438326</span> <span class="mi">487</span><span class="p">.</span><span class="mi">1288</span>   <span class="mi">3</span><span class="p">.</span><span class="mi">43292181</span>
+<span class="n">Oct</span> <span class="mi">1960</span> <span class="o">-</span><span class="mi">21</span><span class="p">.</span><span class="mi">063432</span> <span class="mi">490</span><span class="p">.</span><span class="mi">7530</span>  <span class="o">-</span><span class="mi">8</span><span class="p">.</span><span class="mi">68958822</span>
+<span class="n">Nov</span> <span class="mi">1960</span> <span class="o">-</span><span class="mi">57</span><span class="p">.</span><span class="mi">481851</span> <span class="mi">494</span><span class="p">.</span><span class="mi">3773</span> <span class="o">-</span><span class="mi">46</span><span class="p">.</span><span class="mi">89543684</span>
+<span class="nb">Dec</span> <span class="mi">1960</span> <span class="o">-</span><span class="mi">31</span><span class="p">.</span><span class="mi">740516</span> <span class="mi">497</span><span class="p">.</span><span class="mi">4299</span> <span class="o">-</span><span class="mi">33</span><span class="p">.</span><span class="mi">68938955</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="c1"># Plotting the decomposed data</span>
+<span class="nf">par</span><span class="p">(</span><span class="n">mfrow</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">))</span>
+<span class="nf">plot</span><span class="p">(</span><span class="nf">stl</span><span class="p">(</span><span class="n">ts_ap</span><span class="p">,</span><span class="n">s.window</span><span class="o">=</span><span class="s">&#39;periodic&#39;</span><span class="p">),</span><span class="n">main</span><span class="o">=</span><span class="s">&#39;Decomposition of periodic time series&#39;</span><span class="p">)</span>
+<span class="nf">plot</span><span class="p">(</span><span class="nf">decompose</span><span class="p">(</span><span class="n">ts_ap</span><span class="p">,</span><span class="n">type</span> <span class="o">=</span> <span class="s">&#39;multiplicative&#39;</span><span class="p">))</span>
+</pre></div>
+
+
+<p><img alt="png" src="/images/airpsg_12_0.png"></p>
+<p><img alt="png" src="/images/airpsg_12_1.png"></p>
+<p>To forecast we are using standard regression based methods. For regression, we need dependent and independent variables.
+In our case, dependent variable is 'ts_ap' (AirPassengers) which is known as Yt, independent predictors are either lag values, or moving average values, or difference values or all or combinations of any sort etc.</p>
+<div class="highlight"><pre><span></span><span class="nf">head</span><span class="p">(</span><span class="nf">lag</span><span class="p">(</span><span class="n">ts_ap</span><span class="p">),</span><span class="m">10</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="err">     Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec</span>
+<span class="err">1948                                             112</span>
+<span class="err">1949 118 132 129 121 135 148 148 136 119</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="nf">head</span><span class="p">(</span><span class="nf">lag</span><span class="p">(</span><span class="n">ts_ap</span><span class="p">,</span><span class="m">1</span><span class="p">),</span><span class="m">10</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="err">     Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec</span>
+<span class="err">1948                                             112</span>
+<span class="err">1949 118 132 129 121 135 148 148 136 119</span>
+</pre></div>
+
+
+<p>Here lead is positive values shifted to earlier stage and lag is negative values shifted to later stage.</p>
+<div class="highlight"><pre><span></span><span class="nf">head</span><span class="p">(</span><span class="nf">lag</span><span class="p">(</span><span class="n">ts_ap</span><span class="p">,</span><span class="m">-1</span><span class="p">),</span><span class="m">10</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="err">     Feb Mar Apr May Jun Jul Aug Sep Oct Nov</span>
+<span class="err">1949 112 118 132 129 121 135 148 148 136 119</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="nf">head</span><span class="p">(</span><span class="nf">as.data.frame</span><span class="p">(</span><span class="n">ts_ap</span><span class="p">),</span><span class="m">10</span><span class="p">)</span>
+</pre></div>
+
+
+<table>
+<thead><tr><th scope=col>x</th></tr></thead>
+<tbody>
+    <tr><td>112</td></tr>
+    <tr><td>118</td></tr>
+    <tr><td>132</td></tr>
+    <tr><td>129</td></tr>
+    <tr><td>121</td></tr>
+    <tr><td>135</td></tr>
+    <tr><td>148</td></tr>
+    <tr><td>148</td></tr>
+    <tr><td>136</td></tr>
+    <tr><td>119</td></tr>
+</tbody>
+</table>
+
+<p>We'll find the autocorrelation and partial autocorrelation for the time series data. The function Acf computes (and by default plots) an estimate of the autocorrelation function of a (possibly multivariate) time series. Function Pacf computes (and by default plots) an estimate of the partial autocorrelation function of a (possibly multivariate) time series. </p>
+<div class="highlight"><pre><span></span><span class="nf">par</span><span class="p">(</span><span class="n">mfrow</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">2</span><span class="p">,</span><span class="m">1</span><span class="p">))</span>
+<span class="nf">acf</span><span class="p">(</span><span class="n">ts_ap</span><span class="p">,</span> <span class="n">main</span><span class="o">=</span><span class="s">&#39;Series Air Passengers&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<p><img alt="png" src="/images/airpsg_20_0.png"></p>
+<p>The acf from the above graph indicates that the time series is not stationary</p>
+<div class="highlight"><pre><span></span><span class="nf">par</span><span class="p">(</span><span class="n">mfrow</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">2</span><span class="p">,</span><span class="m">1</span><span class="p">))</span>
+<span class="nf">pacf</span><span class="p">(</span><span class="n">ts_ap</span><span class="p">,</span> <span class="n">main</span><span class="o">=</span><span class="s">&#39;Series Air Passengers&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<p><img alt="png" src="/images/airpsg_22_0.png"></p>
+<p>The graph looks fine from pacf angle.</p>
+<div class="highlight"><pre><span></span><span class="c1">#de-trend a time series</span>
+<span class="nf">lm</span><span class="p">(</span><span class="n">JohnsonJohnson</span> <span class="o">~</span><span class="nf">c</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="nf">length</span><span class="p">(</span><span class="n">JohnsonJohnson</span><span class="p">)))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">Call</span><span class="o">:</span>
+<span class="n">lm</span><span class="o">(</span><span class="n">formula</span> <span class="o">=</span> <span class="n">JohnsonJohnson</span> <span class="o">~</span> <span class="n">c</span><span class="o">(</span><span class="mi">1</span><span class="o">:</span><span class="n">length</span><span class="o">(</span><span class="n">JohnsonJohnson</span><span class="o">)))</span>
+
+<span class="n">Coefficients</span><span class="o">:</span>
+                <span class="o">(</span><span class="n">Intercept</span><span class="o">)</span>  <span class="n">c</span><span class="o">(</span><span class="mi">1</span><span class="o">:</span><span class="n">length</span><span class="o">(</span><span class="n">JohnsonJohnson</span><span class="o">))</span>  
+                     <span class="o">-</span><span class="mf">2.130</span>                        <span class="mf">0.163</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">fit</span> <span class="o">&lt;-</span> <span class="nf">lm</span><span class="p">(</span><span class="n">JohnsonJohnson</span> <span class="o">~</span><span class="nf">c</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="nf">length</span><span class="p">(</span><span class="n">JohnsonJohnson</span><span class="p">)))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="nf">par</span><span class="p">(</span><span class="n">mfrow</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">2</span><span class="p">,</span><span class="m">1</span><span class="p">))</span>
+<span class="nf">plot</span><span class="p">(</span><span class="n">JohnsonJohnson</span><span class="p">)</span>
+<span class="nf">plot</span><span class="p">(</span><span class="nf">resid</span><span class="p">(</span><span class="n">fit</span><span class="p">),</span><span class="n">type</span><span class="o">=</span><span class="s">&#39;l&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<p><img alt="png" src="/images/airpsg_26_0.png"></p>
+<p>To de-seasonalize a time series, we first de-compose the time series and then use seasonal adjustment.</p>
+<div class="highlight"><pre><span></span><span class="n">ts_ds_ap_p</span> <span class="o">&lt;-</span> <span class="nf">stl</span><span class="p">(</span><span class="n">ts_ap</span><span class="p">,</span><span class="s">&#39;periodic&#39;</span><span class="p">)</span>
+<span class="n">ts_ds_ap_adj</span> <span class="o">&lt;-</span> <span class="nf">seasadj</span><span class="p">(</span><span class="n">ts_ds_ap_p</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="nf">par</span><span class="p">(</span><span class="n">mfrow</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">2</span><span class="p">,</span><span class="m">1</span><span class="p">))</span>
+<span class="nf">plot</span><span class="p">(</span><span class="n">ts_ap</span><span class="p">,</span> <span class="n">main</span><span class="o">=</span><span class="s">&#39;Graph of Air Passengers&#39;</span><span class="p">,</span> <span class="n">ylab</span><span class="o">=</span><span class="s">&#39;Air Passengers&#39;</span><span class="p">)</span>
+<span class="nf">plot</span><span class="p">(</span><span class="n">ts_ds_ap_adj</span><span class="p">,</span> <span class="n">main</span><span class="o">=</span><span class="s">&#39;Seasonally adjusted graph of Air Passengers&#39;</span><span class="p">,</span> <span class="n">ylab</span><span class="o">=</span><span class="s">&#39;Seas-adj data&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<p><img alt="png" src="/images/airpsg_29_0.png"></p>
+<div class="highlight"><pre><span></span><span class="nf">par</span><span class="p">(</span><span class="n">mfrow</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">2</span><span class="p">,</span><span class="m">1</span><span class="p">))</span>
+<span class="nf">seasonplot</span><span class="p">(</span><span class="n">ts_ds_ap_adj</span><span class="p">,</span><span class="m">12</span><span class="p">,</span> <span class="n">main</span><span class="o">=</span><span class="s">&#39;Seaonal plot&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<p><img alt="png" src="/images/airpsg_30_0.png"></p>
+<p>Checking if the time series is stationary using ADF test (Augmented Dickey Fuller Test ).</p>
+<p>Null Hypothesis: The time series is not stationary.<br/>
+Alternative Hypothesis: The time series is stationary.</p>
+<div class="highlight"><pre><span></span><span class="nf">library</span><span class="p">(</span><span class="n">tseries</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="nf">adf.test</span><span class="p">(</span><span class="n">ts_ap</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">Warning</span> <span class="n">message</span> <span class="k">in</span> <span class="n">adf</span><span class="p">.</span><span class="n">test</span><span class="p">(</span><span class="n">ts_ap</span><span class="p">):</span>
+<span class="ss">&quot;p-value smaller than printed p-value&quot;</span>
+
+
+
+    <span class="n">Augmented</span> <span class="n">Dickey</span><span class="o">-</span><span class="n">Fuller</span> <span class="n">Test</span>
+
+<span class="k">data</span><span class="p">:</span>  <span class="n">ts_ap</span>
+<span class="n">Dickey</span><span class="o">-</span><span class="n">Fuller</span> <span class="o">=</span> <span class="o">-</span><span class="mi">7</span><span class="p">.</span><span class="mi">3186</span><span class="p">,</span> <span class="n">Lag</span> <span class="k">order</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">p</span><span class="o">-</span><span class="n">value</span> <span class="o">=</span> <span class="mi">0</span><span class="p">.</span><span class="mi">01</span>
+<span class="n">alternative</span> <span class="n">hypothesis</span><span class="p">:</span> <span class="n">stationary</span>
+</pre></div>
+
+
+<p>Since the p-value of the ADF test is less than 0.05, we fail to reject the null hypothesis, hence the time series is not stationary.</p>
+<p>Null Hypothesis: The time series is stationary<br/>
+Alternate Hypothesis: The time series is not stationary</p>
+<div class="highlight"><pre><span></span><span class="nf">kpss.test</span><span class="p">(</span><span class="n">ts_ap</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">Warning</span> <span class="n">message</span> <span class="k">in</span> <span class="n">kpss</span><span class="p">.</span><span class="n">test</span><span class="p">(</span><span class="n">ts_ap</span><span class="p">):</span>
+<span class="ss">&quot;p-value smaller than printed p-value&quot;</span>
+
+
+
+    <span class="n">KPSS</span> <span class="n">Test</span> <span class="k">for</span> <span class="k">Level</span> <span class="n">Stationarity</span>
+
+<span class="k">data</span><span class="p">:</span>  <span class="n">ts_ap</span>
+<span class="n">KPSS</span> <span class="k">Level</span> <span class="o">=</span> <span class="mi">4</span><span class="p">.</span><span class="mi">3423</span><span class="p">,</span> <span class="n">Truncation</span> <span class="n">lag</span> <span class="k">parameter</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">p</span><span class="o">-</span><span class="n">value</span> <span class="o">=</span> <span class="mi">0</span><span class="p">.</span><span class="mi">01</span>
+</pre></div>
+
+
+<p>Since the p-value of the kpss test is less than 0.05, we have to reject the null hypothesis,
+hence the time series is not stationary.</p>
+<p>Using Differencing method to make the time series stationary</p>
+<div class="highlight"><pre><span></span><span class="c1"># seasonal differencing</span>
+<span class="c1"># number of diff required to make the time series stationary</span>
+<span class="nf">ndiffs</span><span class="p">(</span><span class="n">ts_ap</span><span class="p">)</span> 
+</pre></div>
+
+
+<p>1</p>
+<div class="highlight"><pre><span></span><span class="n">ts_ap_sa</span> <span class="o">&lt;-</span> <span class="nf">diff</span><span class="p">(</span><span class="n">AirPassengers</span><span class="p">,</span><span class="n">lag</span><span class="o">=</span><span class="nf">frequency</span><span class="p">(</span><span class="n">AirPassengers</span><span class="p">),</span><span class="n">differences</span> <span class="o">=</span> <span class="m">1</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">ts_AP_SA_diff_1</span> <span class="o">&lt;-</span> <span class="nf">diff</span><span class="p">(</span><span class="n">ts_ap_sa</span><span class="p">,</span><span class="n">differences</span> <span class="o">=</span> <span class="m">1</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="nf">par</span><span class="p">(</span><span class="n">mfrow</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">2</span><span class="p">,</span><span class="m">2</span><span class="p">))</span>
+<span class="nf">plot</span><span class="p">(</span><span class="n">ts_ap</span><span class="p">,</span> <span class="n">main</span><span class="o">=</span><span class="s">&#39;Air Passengers&#39;</span><span class="p">,</span> <span class="n">ylab</span><span class="o">=</span><span class="s">&#39;AirPassengers&#39;</span><span class="p">)</span>
+<span class="nf">plot</span><span class="p">(</span><span class="n">ts_ap_sa</span><span class="p">,</span><span class="n">type</span><span class="o">=</span><span class="s">&#39;l&#39;</span><span class="p">,</span> <span class="n">main</span><span class="o">=</span><span class="s">&#39;Difference 1&#39;</span><span class="p">,</span> <span class="n">ylab</span><span class="o">=</span><span class="s">&#39;Diff=1&#39;</span><span class="p">)</span>
+<span class="nf">plot</span><span class="p">(</span><span class="n">ts_AP_SA_diff_1</span><span class="p">,</span><span class="n">type</span><span class="o">=</span><span class="s">&#39;l&#39;</span><span class="p">,</span> <span class="n">main</span><span class="o">=</span><span class="s">&#39;Difference in differences&#39;</span><span class="p">,</span> <span class="n">ylab</span><span class="o">=</span><span class="s">&#39;DID&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<p><img alt="png" src="/images/airpsg_43_0.png"></p>
+<div class="highlight"><pre><span></span><span class="nf">ndiffs</span><span class="p">(</span><span class="n">ts_ap_sa</span><span class="p">)</span>
+</pre></div>
+
+
+<p>1</p>
+<p>One can check and proceed to maximum diff 2 taken step by step, 1 at a time.</p>
+<p>Showing 12 period moving average, 3 period moving average, 5 period moving average and 7 period moving average plots.</p>
+<p><img alt="png" src="/images/airpsg_50_0.png"></p>
+<p><img alt="png" src="/images/airpsg_50_1.png"></p>
+<h4>ARIMA - Auto regressive integrated moving average model</h4>
+<div class="highlight"><pre><span></span><span class="nf">head</span><span class="p">(</span><span class="n">AirPassengers</span><span class="p">,</span><span class="m">10</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="err">     Jan Feb Mar Apr May Jun Jul Aug Sep Oct</span>
+<span class="err">1949 112 118 132 129 121 135 148 148 136 119</span>
+</pre></div>
+
+
+<p>Steps in ARIMA: Plot the series and understand the components.</p>
+<div class="highlight"><pre><span></span><span class="nf">plot</span><span class="p">(</span><span class="n">ts_ap</span><span class="p">,</span><span class="n">main</span><span class="o">=</span><span class="s">&#39;Air Passengers&#39;</span><span class="p">,</span> <span class="n">ylab</span><span class="o">=</span><span class="s">&#39;Air Passengers&#39;</span><span class="p">)</span>
+<span class="nf">plot</span><span class="p">(</span><span class="nf">log</span><span class="p">(</span><span class="n">ts_ap</span><span class="p">),</span><span class="n">main</span><span class="o">=</span><span class="s">&#39;Log of Air Passengers&#39;</span><span class="p">,</span> <span class="n">ylab</span><span class="o">=</span><span class="s">&#39;log(AirPassengers)&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<p><img alt="png" src="/images/airpsg_65_0.png"></p>
+<p><img alt="png" src="/images/airpsg_65_1.png"></p>
+<p>Decompose the time series and check for stationarity.</p>
+<div class="highlight"><pre><span></span><span class="nf">adf.test</span><span class="p">(</span><span class="n">ts_ap</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">Warning</span> <span class="n">message</span> <span class="k">in</span> <span class="n">adf</span><span class="p">.</span><span class="n">test</span><span class="p">(</span><span class="n">ts_ap</span><span class="p">):</span>
+<span class="ss">&quot;p-value smaller than printed p-value&quot;</span>
+
+
+
+    <span class="n">Augmented</span> <span class="n">Dickey</span><span class="o">-</span><span class="n">Fuller</span> <span class="n">Test</span>
+
+<span class="k">data</span><span class="p">:</span>  <span class="n">ts_ap</span>
+<span class="n">Dickey</span><span class="o">-</span><span class="n">Fuller</span> <span class="o">=</span> <span class="o">-</span><span class="mi">7</span><span class="p">.</span><span class="mi">3186</span><span class="p">,</span> <span class="n">Lag</span> <span class="k">order</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">p</span><span class="o">-</span><span class="n">value</span> <span class="o">=</span> <span class="mi">0</span><span class="p">.</span><span class="mi">01</span>
+<span class="n">alternative</span> <span class="n">hypothesis</span><span class="p">:</span> <span class="n">stationary</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="nf">adf.test</span><span class="p">(</span><span class="nf">log</span><span class="p">(</span><span class="n">ts_ap</span><span class="p">))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">Warning</span> <span class="n">message</span> <span class="k">in</span> <span class="n">adf</span><span class="p">.</span><span class="n">test</span><span class="p">(</span><span class="n">log</span><span class="p">(</span><span class="n">ts_ap</span><span class="p">)):</span>
+<span class="ss">&quot;p-value smaller than printed p-value&quot;</span>
+
+
+
+    <span class="n">Augmented</span> <span class="n">Dickey</span><span class="o">-</span><span class="n">Fuller</span> <span class="n">Test</span>
+
+<span class="k">data</span><span class="p">:</span>  <span class="n">log</span><span class="p">(</span><span class="n">ts_ap</span><span class="p">)</span>
+<span class="n">Dickey</span><span class="o">-</span><span class="n">Fuller</span> <span class="o">=</span> <span class="o">-</span><span class="mi">6</span><span class="p">.</span><span class="mi">4215</span><span class="p">,</span> <span class="n">Lag</span> <span class="k">order</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">p</span><span class="o">-</span><span class="n">value</span> <span class="o">=</span> <span class="mi">0</span><span class="p">.</span><span class="mi">01</span>
+<span class="n">alternative</span> <span class="n">hypothesis</span><span class="p">:</span> <span class="n">stationary</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="nf">adf.test</span><span class="p">(</span><span class="nf">log</span><span class="p">(</span><span class="nf">log</span><span class="p">(</span><span class="n">ts_ap</span><span class="p">)))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">Warning</span> <span class="n">message</span> <span class="k">in</span> <span class="n">adf</span><span class="p">.</span><span class="n">test</span><span class="p">(</span><span class="n">log</span><span class="p">(</span><span class="n">log</span><span class="p">(</span><span class="n">ts_ap</span><span class="p">))):</span>
+<span class="ss">&quot;p-value smaller than printed p-value&quot;</span>
+
+
+
+    <span class="n">Augmented</span> <span class="n">Dickey</span><span class="o">-</span><span class="n">Fuller</span> <span class="n">Test</span>
+
+<span class="k">data</span><span class="p">:</span>  <span class="n">log</span><span class="p">(</span><span class="n">log</span><span class="p">(</span><span class="n">ts_ap</span><span class="p">))</span>
+<span class="n">Dickey</span><span class="o">-</span><span class="n">Fuller</span> <span class="o">=</span> <span class="o">-</span><span class="mi">5</span><span class="p">.</span><span class="mi">5377</span><span class="p">,</span> <span class="n">Lag</span> <span class="k">order</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">p</span><span class="o">-</span><span class="n">value</span> <span class="o">=</span> <span class="mi">0</span><span class="p">.</span><span class="mi">01</span>
+<span class="n">alternative</span> <span class="n">hypothesis</span><span class="p">:</span> <span class="n">stationary</span>
+</pre></div>
+
+
+<p>Non-seasonal <a href="https://en.wikipedia.org/wiki/Autoregressive_integrated_moving_average">ARIMA</a> models are generally denoted ARIMA(p,d,q) and Seasonal ARIMA models are usually denoted ARIMA(p,d,q)(P,D,Q)m.</p>
+<div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="nf">data.frame</span><span class="p">(</span><span class="n">Yt</span><span class="o">=</span><span class="n">AirPassengers</span><span class="p">)</span>
+<span class="nf">head</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</pre></div>
+
+
+<table>
+<thead><tr><th scope=col>Yt</th></tr></thead>
+<tbody>
+    <tr><td>112</td></tr>
+    <tr><td>118</td></tr>
+    <tr><td>132</td></tr>
+    <tr><td>129</td></tr>
+    <tr><td>121</td></tr>
+    <tr><td>135</td></tr>
+</tbody>
+</table>
+
+<div class="highlight"><pre><span></span><span class="n">mov_avg_7</span> <span class="o">&lt;-</span> <span class="nf">data.frame</span><span class="p">(</span><span class="n">mov_avg_7</span> <span class="o">=</span> <span class="nf">ma</span><span class="p">(</span><span class="n">AirPassengers</span><span class="p">,</span><span class="n">order</span><span class="o">=</span><span class="m">7</span><span class="p">))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="nf">library</span><span class="p">(</span><span class="n">ggplot2</span><span class="p">)</span>
+</pre></div>
+
+
+<p>Decompose and plot the time series data.</p>
+<div class="highlight"><pre><span></span><span class="n">decomp</span> <span class="o">=</span> <span class="nf">stl</span><span class="p">(</span><span class="n">data</span><span class="o">$</span><span class="n">Yt</span><span class="p">,</span><span class="n">s.window</span> <span class="o">=</span> <span class="s">&#39;periodic&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="nf">plot</span><span class="p">(</span><span class="nf">seasadj</span><span class="p">(</span><span class="n">decomp</span><span class="p">),</span><span class="n">main</span><span class="o">=</span><span class="s">&#39;Seasonal adjustment on decomposed Air Passengers&#39;</span><span class="p">)</span> <span class="c1">#, ylab=&#39;Air Passengers&#39;)</span>
+</pre></div>
+
+
+<p><img alt="png" src="/images/airpsg_78_0.png"></p>
+<div class="highlight"><pre><span></span><span class="nf">head</span><span class="p">(</span><span class="nf">data.frame</span><span class="p">(</span><span class="nf">ma</span><span class="p">(</span><span class="n">AirPassengers</span><span class="p">,</span><span class="n">order</span><span class="o">=</span><span class="m">7</span><span class="p">)))</span>
+</pre></div>
+
+
+<table>
+<thead><tr><th scope=col>ma.AirPassengers..order...7.</th></tr></thead>
+<tbody>
+    <tr><td>      NA</td></tr>
+    <tr><td>      NA</td></tr>
+    <tr><td>      NA</td></tr>
+    <tr><td>127.8571</td></tr>
+    <tr><td>133.0000</td></tr>
+    <tr><td>135.5714</td></tr>
+</tbody>
+</table>
+
+<div class="highlight"><pre><span></span><span class="n">diff_ap_1</span> <span class="o">=</span> <span class="nf">diff</span><span class="p">(</span><span class="n">AirPassengers</span><span class="p">,</span><span class="n">differences</span> <span class="o">=</span> <span class="m">1</span><span class="p">)</span>
+<span class="nf">plot</span><span class="p">(</span><span class="n">diff_ap_1</span><span class="p">,</span> <span class="n">main</span><span class="o">=</span><span class="s">&#39;Differences in 1&#39;</span><span class="p">,</span> <span class="n">ylab</span><span class="o">=</span><span class="s">&#39;Differences in 1&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<p><img alt="png" src="/images/airpsg_80_0.png"></p>
+<div class="highlight"><pre><span></span><span class="nf">adf.test</span><span class="p">(</span><span class="n">diff_ap_1</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">Warning</span> <span class="n">message</span> <span class="k">in</span> <span class="n">adf</span><span class="p">.</span><span class="n">test</span><span class="p">(</span><span class="n">diff_ap_1</span><span class="p">):</span>
+<span class="ss">&quot;p-value smaller than printed p-value&quot;</span>
+
+
+
+    <span class="n">Augmented</span> <span class="n">Dickey</span><span class="o">-</span><span class="n">Fuller</span> <span class="n">Test</span>
+
+<span class="k">data</span><span class="p">:</span>  <span class="n">diff_ap_1</span>
+<span class="n">Dickey</span><span class="o">-</span><span class="n">Fuller</span> <span class="o">=</span> <span class="o">-</span><span class="mi">7</span><span class="p">.</span><span class="mi">0177</span><span class="p">,</span> <span class="n">Lag</span> <span class="k">order</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">p</span><span class="o">-</span><span class="n">value</span> <span class="o">=</span> <span class="mi">0</span><span class="p">.</span><span class="mi">01</span>
+<span class="n">alternative</span> <span class="n">hypothesis</span><span class="p">:</span> <span class="n">stationary</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="nf">par</span><span class="p">(</span><span class="n">mfrow</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">2</span><span class="p">,</span><span class="m">1</span><span class="p">))</span>
+<span class="nf">acf</span><span class="p">(</span><span class="n">diff_ap_1</span><span class="p">,</span> <span class="n">main</span><span class="o">=</span><span class="s">&#39;Series differences&#39;</span><span class="p">)</span>
+<span class="nf">pacf</span><span class="p">(</span><span class="n">diff_ap_1</span><span class="p">,</span> <span class="n">main</span><span class="o">=</span><span class="s">&#39;Series differences&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<p><img alt="png" src="/images/airpsg_82_0.png"></p>
+<p>Fit best ARIMA model to time series.</p>
+<div class="highlight"><pre><span></span><span class="nf">auto.arima</span><span class="p">(</span><span class="n">AirPassengers</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">Series</span><span class="o">:</span> <span class="n">AirPassengers</span> 
+<span class="n">ARIMA</span><span class="o">(</span><span class="mi">2</span><span class="o">,</span><span class="mi">1</span><span class="o">,</span><span class="mi">1</span><span class="o">)(</span><span class="mi">0</span><span class="o">,</span><span class="mi">1</span><span class="o">,</span><span class="mi">0</span><span class="o">)[</span><span class="mi">12</span><span class="o">]</span>
+
+<span class="n">Coefficients</span><span class="o">:</span>
+         <span class="n">ar1</span>     <span class="n">ar2</span>      <span class="n">ma1</span>
+      <span class="mf">0.5960</span>  <span class="mf">0.2143</span>  <span class="o">-</span><span class="mf">0.9819</span>
+<span class="n">s</span><span class="o">.</span><span class="na">e</span><span class="o">.</span>  <span class="mf">0.0888</span>  <span class="mf">0.0880</span>   <span class="mf">0.0292</span>
+
+<span class="n">sigma</span><span class="o">^</span><span class="mi">2</span> <span class="n">estimated</span> <span class="k">as</span> <span class="mf">132.3</span><span class="o">:</span>  <span class="n">log</span> <span class="n">likelihood</span><span class="o">=-</span><span class="mf">504.92</span>
+<span class="n">AIC</span><span class="o">=</span><span class="mf">1017.85</span>   <span class="n">AICc</span><span class="o">=</span><span class="mf">1018.17</span>   <span class="n">BIC</span><span class="o">=</span><span class="mf">1029.35</span>
+</pre></div>
+
+
+<p>Print Accuracy for auto ARIMA model.</p>
+<div class="highlight"><pre><span></span><span class="nf">accuracy</span><span class="p">(</span><span class="nf">auto.arima</span><span class="p">(</span><span class="n">AirPassengers</span><span class="p">))</span>
+</pre></div>
+
+
+<table>
+<thead><tr><th></th><th scope=col>ME</th><th scope=col>RMSE</th><th scope=col>MAE</th><th scope=col>MPE</th><th scope=col>MAPE</th><th scope=col>MASE</th><th scope=col>ACF1</th></tr></thead>
+<tbody>
+    <tr><th scope=row>Training set</th><td>1.3423     </td><td>10.84619   </td><td>7.86754    </td><td>0.420698   </td><td>2.800458   </td><td>0.245628   </td><td>-0.00124847</td></tr>
+</tbody>
+</table>
+
+<div class="highlight"><pre><span></span><span class="nf">accuracy</span><span class="p">(</span><span class="nf">auto.arima</span><span class="p">(</span><span class="n">AirPassengers</span><span class="p">,</span><span class="n">seasonal</span> <span class="o">=</span> <span class="bp">F</span><span class="p">))</span>
+</pre></div>
+
+
+<table>
+<thead><tr><th></th><th scope=col>ME</th><th scope=col>RMSE</th><th scope=col>MAE</th><th scope=col>MPE</th><th scope=col>MAPE</th><th scope=col>MASE</th><th scope=col>ACF1</th></tr></thead>
+<tbody>
+    <tr><th scope=row>Training set</th><td>-1.228696   </td><td>25.82793    </td><td>20.59211    </td><td>-1.665245   </td><td>7.476447    </td><td>0.6428946   </td><td>0.0009861072</td></tr>
+</tbody>
+</table>
+
+<div class="highlight"><pre><span></span><span class="nf">accuracy</span><span class="p">(</span><span class="nf">auto.arima</span><span class="p">(</span><span class="n">AirPassengers</span><span class="p">,</span><span class="n">seasonal</span> <span class="o">=</span> <span class="bp">T</span><span class="p">))</span>
+</pre></div>
+
+
+<table>
+<thead><tr><th></th><th scope=col>ME</th><th scope=col>RMSE</th><th scope=col>MAE</th><th scope=col>MPE</th><th scope=col>MAPE</th><th scope=col>MASE</th><th scope=col>ACF1</th></tr></thead>
+<tbody>
+    <tr><th scope=row>Training set</th><td>1.3423     </td><td>10.84619   </td><td>7.86754    </td><td>0.420698   </td><td>2.800458   </td><td>0.245628   </td><td>-0.00124847</td></tr>
+</tbody>
+</table>
+
+<div class="highlight"><pre><span></span><span class="n">model_ap_4</span> <span class="o">&lt;-</span> <span class="nf">auto.arima</span><span class="p">(</span><span class="n">AirPassengers</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="nf">tsdisplay</span><span class="p">(</span><span class="nf">residuals</span><span class="p">(</span><span class="n">model_ap_4</span><span class="p">),</span><span class="n">lag.max</span><span class="o">=</span><span class="m">20</span><span class="p">,</span> <span class="n">main</span><span class="o">=</span><span class="s">&#39;Residuals(auto arima)&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<p><img alt="png" src="/images/airpsg_88_0.png"></p>
+<p>Fit ARIMA model to time series.</p>
+<div class="highlight"><pre><span></span><span class="n">model_with_111</span> <span class="o">&lt;-</span> <span class="nf">arima</span><span class="p">(</span><span class="n">AirPassengers</span><span class="p">,</span><span class="n">order</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="m">1</span><span class="p">,</span><span class="m">1</span><span class="p">))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="nf">accuracy</span><span class="p">(</span><span class="n">model_with_111</span><span class="p">)</span>
+</pre></div>
+
+
+<table>
+<thead><tr><th></th><th scope=col>ME</th><th scope=col>RMSE</th><th scope=col>MAE</th><th scope=col>MPE</th><th scope=col>MAPE</th><th scope=col>MASE</th><th scope=col>ACF1</th></tr></thead>
+<tbody>
+    <tr><th scope=row>Training set</th><td>1.9209    </td><td>30.91125  </td><td>24.12176  </td><td>0.4150742 </td><td>8.566115  </td><td>0.9327776 </td><td>0.03749257</td></tr>
+</tbody>
+</table>
+
+<div class="highlight"><pre><span></span><span class="nf">accuracy</span><span class="p">(</span><span class="n">model_ap_4</span><span class="p">)</span>
+</pre></div>
+
+
+<table>
+<thead><tr><th></th><th scope=col>ME</th><th scope=col>RMSE</th><th scope=col>MAE</th><th scope=col>MPE</th><th scope=col>MAPE</th><th scope=col>MASE</th><th scope=col>ACF1</th></tr></thead>
+<tbody>
+    <tr><th scope=row>Training set</th><td>1.3423     </td><td>10.84619   </td><td>7.86754    </td><td>0.420698   </td><td>2.800458   </td><td>0.245628   </td><td>-0.00124847</td></tr>
+</tbody>
+</table>
+
+<div class="highlight"><pre><span></span><span class="n">model_with_121</span> <span class="o">&lt;-</span> <span class="nf">arima</span><span class="p">(</span><span class="n">AirPassengers</span><span class="p">,</span><span class="n">order</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">1</span><span class="p">))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="nf">accuracy</span><span class="p">(</span><span class="n">model_with_121</span><span class="p">)</span>
+</pre></div>
+
+
+<table>
+<thead><tr><th></th><th scope=col>ME</th><th scope=col>RMSE</th><th scope=col>MAE</th><th scope=col>MPE</th><th scope=col>MAPE</th><th scope=col>MASE</th><th scope=col>ACF1</th></tr></thead>
+<tbody>
+    <tr><th scope=row>Training set</th><td>-0.02226461</td><td>31.9296    </td><td>24.74944   </td><td>-0.3318117 </td><td>8.700005   </td><td>0.9570499  </td><td>0.06233016 </td></tr>
+</tbody>
+</table>
+
+<div class="highlight"><pre><span></span><span class="n">model_with_125</span> <span class="o">&lt;-</span> <span class="nf">arima</span><span class="p">(</span><span class="n">AirPassengers</span><span class="p">,</span><span class="n">order</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">5</span><span class="p">))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="nf">accuracy</span><span class="p">(</span><span class="n">model_with_125</span><span class="p">)</span>
+</pre></div>
+
+
+<table>
+<thead><tr><th></th><th scope=col>ME</th><th scope=col>RMSE</th><th scope=col>MAE</th><th scope=col>MPE</th><th scope=col>MAPE</th><th scope=col>MASE</th><th scope=col>ACF1</th></tr></thead>
+<tbody>
+    <tr><th scope=row>Training set</th><td>0.622786   </td><td>26.12974   </td><td>19.39259   </td><td>-0.2019999 </td><td>6.721384   </td><td>0.7499027  </td><td>-0.04625799</td></tr>
+</tbody>
+</table>
+
+<p>Will show forecast for the future, using various forecasting models.</p>
+<p><img alt="png" src="/images/airpsg_96_0.png"></p>
+<p><img alt="png" src="/images/airpsg_97_0.png"></p>
+<p><img alt="png" src="/images/airpsg_98_0.png"></p>
+<p>Forecasts using auto ARIMA(2,1,1) model.</p>
+<p><img alt="png" src="/images/airpsg_99_0.png"></p>
+<p>Forecasts using ARIMA(1,1,1) model.</p>
+<p><img alt="png" src="/images/airpsg_100_0.png"></p>
+<p>Forecasts using ARIMA(1,2,1) model.</p>
+<p><img alt="png" src="/images/airpsg_101_0.png"></p>
+<p>Forecasts using auto ARIMA(1,2,5) model.</p>
+<p><img alt="png" src="/images/airpsg_102_0.png"></p>
+<h4>Neural Network Based Forecasting</h4>
+<p>Series: AirPassengers<br/>
+Model:  Average of 10 networks, each of which is a 12-10-1 network with 141 weights, options were - linear output units.<br/>
+sigma^2 estimated as 0.0002052<br/>
+Displaying neural network based forecasting and residuals.</p>
+<p><img alt="png" src="/images/airpsg_110_0.png"></p>
+<p><img alt="png" src="/images/airpsg_111_0.png"></p>
+<p>Performing hyperparameter tuning to increase the model accuracy where<br/>
+p= lags
+P= seasonal lags<br/>
+size= number of neurons in the hidden layer<br/>
+lambda = learning rate<br/>
+repeats = backpropagation<br/>
+Plot the residuals for the NN Model(20, 1, 40).</p>
+<p><img alt="png" src="/images/airpsg_114_0.png"></p>
+<p>Neural network model(20, 1,40) forecast.</p>
+<p><img alt="png" src="/images/airpsg_115_0.png"></p></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">
+        Mangs
+    </span>
+  </span>
+<time datetime="2018-12-16T07:20:00-08:00" pubdate>Sun 16 December 2018</time>  <span class="categories">
+    <a class='category' href='/category/misc.html'>misc</a>
+  </span>
+  <span class="categories">
+    <a class="category" href="/tag/r.html">R</a>,    <a class="category" href="/tag/data-science.html">Data Science</a>  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+
+<aside class="sidebar">
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    <li class="post">
+        <a href="/reuters.html">Reuters Newswire Topics Classification</a>
+    </li>
+    <li class="post">
+        <a href="/cifar.html">Image Classification</a>
+    </li>
+    <li class="post">
+        <a href="/airpsg.html">Airline Passengers Data Analysis</a>
+    </li>
+    <li class="post">
+        <a href="/wine.html">Wine Data Analysis</a>
+    </li>
+    <li class="post">
+        <a href="/tableau.html">Tableau Dashboard</a>
+    </li>
+  </ul>
+</section><section>
+  <h1>Categories</h1>
+    <ul id="recent_posts">
+      <li><a href="/category/misc.html">misc (5)</a></li>
+  </ul>
+</section>
+<section>
+  <h1>Tags</h1>
+    <a href="/tag/python.html">Python</a>,    <a href="/tag/data-science.html">Data Science</a>,    <a href="/tag/r.html">R</a>,    <a href="/tag/tableau.html">Tableau</a></section>
+
+</aside>
+    </div>
+  </div>
+  <footer role="contentinfo">
+<p>
+    Copyright &copy;  2017&ndash;2020  Mangs &mdash;
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p>  </footer>
+</body>
+</html>
